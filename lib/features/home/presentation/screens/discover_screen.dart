@@ -4,10 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/routes/app_router.dart';
-
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/home_strings.dart';
 import '../../../../core/theme/text_styles.dart';
+import '../../../../core/utils/mock_actions.dart';
 import '../../data/home_mock_data.dart';
 import '../providers/home_ui_provider.dart';
 import '../widgets/category_chip_bar.dart';
@@ -32,20 +32,40 @@ class DiscoverScreen extends ConsumerWidget {
               children: [
                 HomeTopBar(
                   title: HomeStrings.discover,
+                  showTitle: true,
                   onProfileTap: () => context.push(AppRouter.profile),
                   onNotificationTap: () => context.push(AppRouter.notifications),
                 ),
-                SizedBox(height: 14.h),
-                const HomeSearchBar(),
-                SizedBox(height: 16.h),
-                Text(
-                  HomeStrings.goodMorning,
-                  style: AppTextStyles.screenTitle(fontSize: 20.sp),
-                ),
+                SizedBox(height: 12.h),
+                const HomeSearchBar(discoverStyle: true),
                 SizedBox(height: 4.h),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      '👋',
+                      style: TextStyle(fontSize: 18.sp),
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      HomeStrings.goodMorning,
+                      style: AppTextStyles.screenTitle(fontSize: 22.sp).copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primary,
+                        letterSpacing: -0.55,
+                        height: 1.27,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 2.h),
                 Text(
                   HomeStrings.readyToSwap,
-                  style: AppTextStyles.subtitle(fontSize: 13.sp),
+                  style: AppTextStyles.subtitle(fontSize: 14.sp).copyWith(
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.textSecondary,
+                    height: 1.43,
+                  ),
                 ),
                 SizedBox(height: 16.h),
                 PromoBanner(
@@ -55,22 +75,55 @@ class DiscoverScreen extends ConsumerWidget {
                 CategoryChipBar(
                   labels: HomeMockData.discoverCategories,
                   selectedIndex: category,
+                  style: CategoryChipStyle.discover,
                   onSelected: (i) =>
                       ref.read(discoverCategoryProvider.notifier).state = i,
                 ),
                 SizedBox(height: 16.h),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Expanded(
-                      child: Text(
-                        HomeStrings.itemsYouMayLike,
-                        style: AppTextStyles.label(fontSize: 15.sp),
+                    Text(
+                      HomeStrings.itemsYouMayLike,
+                      style: AppTextStyles.label(fontSize: 16.sp).copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
                       ),
                     ),
-                    Text(
-                      HomeStrings.viewAll,
-                      style: AppTextStyles.label(fontSize: 13.sp).copyWith(
-                        color: AppColors.accentGreen,
+                    SizedBox(width: 8.w),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                      decoration: BoxDecoration(
+                        color: AppColors.accentLime,
+                        borderRadius: BorderRadius.circular(6.r),
+                      ),
+                      child: Text(
+                        HomeStrings.nearbyBadge,
+                        style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primaryDark,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: () => showMockSnackBar(context, 'View all (mock)'),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            HomeStrings.viewAll,
+                            style: AppTextStyles.label(fontSize: 12.sp).copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.accentGreen,
+                            ),
+                          ),
+                          Icon(
+                            Icons.chevron_right_rounded,
+                            size: 16.sp,
+                            color: AppColors.accentGreen,
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -87,7 +140,7 @@ class DiscoverScreen extends ConsumerWidget {
               crossAxisCount: 2,
               mainAxisSpacing: 12.h,
               crossAxisSpacing: 12.w,
-              childAspectRatio: 0.62,
+              childAspectRatio: 0.64,
             ),
             delegate: SliverChildBuilderDelegate(
               (context, index) {

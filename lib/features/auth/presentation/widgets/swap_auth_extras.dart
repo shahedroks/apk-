@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/text_styles.dart';
+import '../../../../core/utils/mock_actions.dart';
 
 class SwapDividerLabel extends StatelessWidget {
   const SwapDividerLabel({super.key, this.label = AppStrings.orContinueWith});
@@ -37,46 +38,66 @@ class SwapSocialButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(child: _SocialChip(label: AppStrings.google)),
-        SizedBox(width: 12.w),
-        Expanded(child: _SocialChip(label: AppStrings.apple)),
-      ],
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 4.w),
+      child: Row(
+        children: [
+          Expanded(
+            child: _SocialChip(
+              label: AppStrings.google,
+              onTap: () => showMockSnackBar(context, 'Google sign-in (mock)'),
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: _SocialChip(
+              label: AppStrings.apple,
+              onTap: () => showMockSnackBar(context, 'Apple sign-in (mock)'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
 class _SocialChip extends StatelessWidget {
-  const _SocialChip({required this.label});
+  const _SocialChip({required this.label, this.onTap});
 
   final String label;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 48.h,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
+    return Material(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(12.r),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.borderLight),
-      ),
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (label == AppStrings.google) _GoogleDots(),
-            if (label == AppStrings.apple)
-              Icon(Icons.apple, size: 20.sp, color: AppColors.textPrimary),
-            SizedBox(width: 8.w),
-            Text(
-              label,
-              style: AppTextStyles.label(fontSize: 14.sp).copyWith(
-                fontWeight: FontWeight.w600,
+        child: Container(
+          height: 46.h,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(color: AppColors.borderLight),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (label == AppStrings.google) _GoogleDots(),
+              if (label == AppStrings.apple)
+                Icon(Icons.apple, size: 20.sp, color: AppColors.textPrimary),
+              SizedBox(width: 8.w),
+              Text(
+                label,
+                style: AppTextStyles.label(fontSize: 14.sp).copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -129,11 +150,11 @@ class SwapStatsBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(14.w),
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
       decoration: BoxDecoration(
-        color: AppColors.infoBackground,
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.borderLight),
+        color: AppColors.mintGlow.withValues(alpha: 0.45),
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(color: AppColors.accentLime.withValues(alpha: 0.35)),
       ),
       child: Row(
         children: [
@@ -142,7 +163,7 @@ class SwapStatsBanner extends StatelessWidget {
             height: 40.w,
             decoration: BoxDecoration(
               color: AppColors.accentLime,
-              borderRadius: BorderRadius.circular(8.r),
+              borderRadius: BorderRadius.circular(20.r),
             ),
             child: Icon(
               Icons.eco_outlined,
@@ -150,25 +171,62 @@ class SwapStatsBanner extends StatelessWidget {
               size: 22.sp,
             ),
           ),
-          SizedBox(width: 10.w),
+          SizedBox(width: 12.w),
           Expanded(
             child: Text(
               AppStrings.itemsDiverted,
               style: AppTextStyles.subtitle(fontSize: 13.sp).copyWith(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w600,
+                height: 1.35,
               ),
             ),
           ),
-          Icon(
-            Icons.trending_up_rounded,
-            color: AppColors.accentGreen,
-            size: 22.sp,
-          ),
+          SizedBox(width: 8.w),
+          const _EcoSparkline(),
         ],
       ),
     );
   }
+}
+
+class _EcoSparkline extends StatelessWidget {
+  const _EcoSparkline();
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: Size(48.w, 28.h),
+      painter: _SparklinePainter(),
+    );
+  }
+}
+
+class _SparklinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AppColors.accentGreen
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final path = Path();
+    final points = [0.85, 0.7, 0.75, 0.55, 0.5, 0.35, 0.25];
+    for (var i = 0; i < points.length; i++) {
+      final x = size.width * (i / (points.length - 1));
+      final y = size.height * points[i];
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class SwapInfoBox extends StatelessWidget {
@@ -194,7 +252,15 @@ class SwapInfoBox extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.info_outline, size: 20.sp, color: AppColors.primary),
+          Container(
+            width: 36.w,
+            height: 36.w,
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            child: Icon(Icons.info_outline, size: 20.sp, color: AppColors.primary),
+          ),
           SizedBox(width: 10.w),
           Expanded(
             child: Column(

@@ -146,25 +146,15 @@ class _SwapTabs extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 10.h),
                 decoration: BoxDecoration(
-                  color: isActive ? AppColors.surface : Colors.transparent,
+                  color: isActive ? AppColors.primary : Colors.transparent,
                   borderRadius: BorderRadius.circular(10.r),
-                  boxShadow: isActive
-                      ? [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 2,
-                          ),
-                        ]
-                      : null,
                 ),
                 child: Text(
                   labels[index],
                   textAlign: TextAlign.center,
                   style: AppTextStyles.caption(fontSize: 11.sp).copyWith(
                     fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                    color: isActive
-                        ? AppColors.textPrimary
-                        : AppColors.textMuted,
+                    color: isActive ? Colors.white : AppColors.textMuted,
                   ),
                 ),
               ),

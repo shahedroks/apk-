@@ -17,12 +17,14 @@ class SwapTextField extends StatelessWidget {
     this.keyboardType,
     this.validator,
     this.helperText,
+    this.fillColor,
   });
 
   final String label;
   final String? trailingLabel;
   final String? hintText;
   final String? helperText;
+  final Color? fillColor;
   final TextEditingController controller;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
@@ -71,7 +73,7 @@ class SwapTextField extends StatelessWidget {
               color: AppColors.textMuted,
             ),
             filled: true,
-            fillColor: AppColors.surface,
+            fillColor: fillColor ?? AppColors.surface,
             contentPadding: EdgeInsets.symmetric(
               horizontal: 14.w,
               vertical: 14.h,

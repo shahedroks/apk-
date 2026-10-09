@@ -10,6 +10,7 @@ import '../../../../core/theme/text_styles.dart';
 import '../../../../core/utils/validators.dart';
 import '../providers/auth_provider.dart';
 import '../providers/login_ui_provider.dart';
+import '../widgets/auth_form_card.dart';
 import '../widgets/auth_mode_toggle.dart';
 import '../widgets/swap_auth_extras.dart';
 import '../widgets/swap_brand_header.dart';
@@ -75,7 +76,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             Text(
               AppStrings.welcomeBack,
               textAlign: TextAlign.center,
-              style: AppTextStyles.screenTitle(fontSize: 22.sp),
+              style: AppTextStyles.screenTitle(fontSize: 24.sp).copyWith(
+                color: AppColors.primary,
+              ),
             ),
             SizedBox(height: 4.h),
             Text(
@@ -90,19 +93,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               onSignUpTap: () => context.go(AppRouter.register),
             ),
             SizedBox(height: 16.h),
-            Container(
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(12.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 2,
-                    offset: const Offset(0, 1),
-                  ),
-                ],
-              ),
+            AuthFormCard(
               child: Column(
                 children: [
                   SwapTextField(
@@ -144,38 +135,39 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ),
                   SizedBox(height: 12.h),
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 8.w,
-                    runSpacing: 4.h,
+                  Row(
                     children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            width: 24.w,
-                            height: 24.w,
-                            child: Checkbox(
-                              value: ui.rememberMe,
-                              activeColor: AppColors.primary,
-                              side: const BorderSide(color: AppColors.textMuted),
-                              onChanged: (value) => ref
-                                  .read(loginUiProvider.notifier)
-                                  .toggleRememberMe(value),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 22.w,
+                              height: 22.w,
+                              child: Checkbox(
+                                value: ui.rememberMe,
+                                activeColor: AppColors.primary,
+                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                visualDensity: VisualDensity.compact,
+                                side: const BorderSide(color: AppColors.textMuted),
+                                onChanged: (value) => ref
+                                    .read(loginUiProvider.notifier)
+                                    .toggleRememberMe(value),
+                              ),
                             ),
-                          ),
-                          SizedBox(width: 8.w),
-                          Text(
-                            AppStrings.rememberMe,
-                            style: AppTextStyles.subtitle(fontSize: 13.sp),
-                          ),
-                        ],
+                            SizedBox(width: 6.w),
+                            Flexible(
+                              child: Text(
+                                AppStrings.rememberMe,
+                                style: AppTextStyles.subtitle(fontSize: 13.sp),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       TextButton(
-                        onPressed: () =>
-                            context.push(AppRouter.forgotPassword),
+                        onPressed: () => context.push(AppRouter.forgotPassword),
                         style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
+                          padding: EdgeInsets.symmetric(horizontal: 4.w),
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
@@ -183,6 +175,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           AppStrings.forgotPassword,
                           style: AppTextStyles.label(fontSize: 13.sp).copyWith(
                             color: AppColors.primary,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
@@ -202,6 +195,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   SwapPrimaryButton(
                     label: AppStrings.logIn,
                     icon: Icons.arrow_forward_rounded,
+                    iconAtEnd: true,
                     isLoading: _authProvider.isLoading,
                     onPressed: _submit,
                   ),

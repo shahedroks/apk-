@@ -14,10 +14,10 @@ class ChatDateSeparator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 8.h),
+        margin: EdgeInsets.symmetric(vertical: 4.h),
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
         decoration: BoxDecoration(
-          color: AppColors.borderLight,
+          color: const Color(0xFFE6EEFF),
           borderRadius: BorderRadius.circular(999.r),
         ),
         child: Text(
@@ -44,29 +44,39 @@ class IncomingChatBubble extends StatelessWidget {
   final String time;
   final bool showAvatar;
 
+  static const Color _bubbleFill = Color(0xFFEFF4FF);
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 12.h),
+      padding: EdgeInsets.only(bottom: 16.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (showAvatar)
             Padding(
               padding: EdgeInsets.only(right: 4.w, bottom: 4.h),
-              child: CircleAvatar(
-                radius: 14.r,
-                backgroundColor: AppColors.infoBorder,
-                child: Icon(Icons.person, size: 16.sp, color: AppColors.primary),
+              child: Container(
+                width: 28.w,
+                height: 28.w,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFDEE9FC),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.person_rounded,
+                  size: 16.sp,
+                  color: AppColors.primary.withValues(alpha: 0.4),
+                ),
               ),
             )
           else
             SizedBox(width: 32.w),
           Flexible(
             child: Container(
-              padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 10.h),
+              padding: EdgeInsets.all(14.w),
               decoration: BoxDecoration(
-                color: AppColors.infoBackground,
+                color: _bubbleFill,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(16.r),
                   topRight: Radius.circular(16.r),
@@ -82,23 +92,25 @@ class IncomingChatBubble extends StatelessWidget {
                 ],
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      text,
-                      style: AppTextStyles.subtitle(fontSize: 14.sp).copyWith(
-                        color: AppColors.textPrimary,
-                        height: 1.35,
-                      ),
+                  Text(
+                    text,
+                    style: AppTextStyles.subtitle(fontSize: 14.sp).copyWith(
+                      fontWeight: FontWeight.w400,
+                      color: const Color(0xFF121C2A),
+                      height: 23 / 14,
                     ),
                   ),
-                  SizedBox(height: 6.h),
-                  Text(
-                    time,
-                    style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
-                      color: AppColors.textMuted,
+                  SizedBox(height: 4.h),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      time,
+                      style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ),
                 ],
@@ -123,16 +135,18 @@ class OutgoingChatBubble extends StatelessWidget {
   final String time;
   final bool read;
 
+  static const Color _timeOnGreen = Color(0xFF79A694);
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 12.h),
+      padding: EdgeInsets.only(bottom: 16.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Flexible(
             child: Container(
-              padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 10.h),
+              padding: EdgeInsets.fromLTRB(14.w, 13.h, 14.w, 14.h),
               decoration: BoxDecoration(
                 color: AppColors.primary,
                 borderRadius: BorderRadius.only(
@@ -141,35 +155,48 @@ class OutgoingChatBubble extends StatelessWidget {
                   bottomLeft: Radius.circular(16.r),
                   bottomRight: Radius.circular(2.r),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 6,
+                    offset: const Offset(0, 4),
+                    spreadRadius: -1,
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                    spreadRadius: -2,
+                  ),
+                ],
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      text,
-                      style: AppTextStyles.subtitle(fontSize: 14.sp).copyWith(
-                        color: Colors.white,
-                        height: 1.35,
-                      ),
+                  Text(
+                    text,
+                    style: AppTextStyles.subtitle(fontSize: 14.sp).copyWith(
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
+                      height: 23 / 14,
                     ),
                   ),
-                  SizedBox(height: 6.h),
+                  SizedBox(height: 4.h),
                   Row(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
                         time,
                         style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
-                          color: Colors.white.withValues(alpha: 0.75),
+                          fontWeight: FontWeight.w700,
+                          color: _timeOnGreen,
                         ),
                       ),
                       if (read) ...[
                         SizedBox(width: 4.w),
                         Icon(
-                          Icons.done_all,
-                          size: 14.sp,
+                          Icons.done_all_rounded,
+                          size: 13.sp,
                           color: AppColors.accentLime,
                         ),
                       ],
@@ -193,32 +220,32 @@ class SafeSwapSpotCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 12.h),
+      padding: EdgeInsets.only(bottom: 16.h),
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.all(14.w),
+        padding: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
-          color: AppColors.infoBackground,
-          borderRadius: BorderRadius.circular(14.r),
-          border: Border.all(color: AppColors.infoBorder),
+          color: const Color(0xFFDEE9FC),
+          borderRadius: BorderRadius.circular(12.r),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 36.w,
-              height: 36.w,
-              decoration: BoxDecoration(
+              width: 32.w,
+              height: 32.w,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
                 color: AppColors.mintGlow,
-                borderRadius: BorderRadius.circular(10.r),
+                shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.verified_user_outlined,
-                size: 20.sp,
-                color: AppColors.primary,
+                Icons.shield_outlined,
+                size: 17.sp,
+                color: AppColors.primaryDark,
               ),
             ),
-            SizedBox(width: 10.w),
+            SizedBox(width: 12.w),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -226,38 +253,60 @@ class SafeSwapSpotCard extends StatelessWidget {
                   Text(
                     ChatStrings.safeSwapSpot,
                     style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.3,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primaryDark,
+                      letterSpacing: 0.2,
                     ),
                   ),
-                  SizedBox(height: 4.h),
+                  SizedBox(height: 2.h),
                   Text(
                     ChatStrings.dominoPark,
-                    style: AppTextStyles.label(fontSize: 14.sp),
+                    style: AppTextStyles.label(fontSize: 13.sp).copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF121C2A),
+                    ),
                   ),
                   Text(
                     ChatStrings.dominoParkSub,
-                    style: AppTextStyles.caption(fontSize: 11.sp).copyWith(
+                    style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
+                      fontWeight: FontWeight.w700,
                       color: AppColors.textSecondary,
+                      height: 1.2,
                     ),
                   ),
                 ],
               ),
             ),
-            TextButton(
-              onPressed: onMapTap,
-              style: TextButton.styleFrom(
-                backgroundColor: AppColors.surface,
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                shape: RoundedRectangleBorder(
+            Align(
+              alignment: Alignment.center,
+              child: Material(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(8.r),
+                elevation: 0,
+                child: InkWell(
+                  onTap: onMapTap,
                   borderRadius: BorderRadius.circular(8.r),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 2,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      ChatStrings.map,
+                      style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryDark,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              child: Text(
-                ChatStrings.map,
-                style: AppTextStyles.label(fontSize: 12.sp),
               ),
             ),
           ],
@@ -284,27 +333,32 @@ class ChatQuickReplyBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 40.h,
+      height: 32.h,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         itemCount: chips.length,
-        separatorBuilder: (_, _) => SizedBox(width: 8.w),
+        separatorBuilder: (_, _) => SizedBox(width: 4.w),
         itemBuilder: (context, index) {
           final label = chips[index];
-          return ActionChip(
-            label: Text(
-              label,
-              style: AppTextStyles.caption(fontSize: 12.sp).copyWith(
-                fontWeight: FontWeight.w600,
+          return GestureDetector(
+            onTap: () => onChipTap(label),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE6EEFF),
+                borderRadius: BorderRadius.circular(999.r),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                label,
+                style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryDark,
+                  height: 1,
+                ),
               ),
             ),
-            backgroundColor: AppColors.infoBackground,
-            side: const BorderSide(color: AppColors.infoBorder),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(999.r),
-            ),
-            onPressed: () => onChipTap(label),
           );
         },
       ),
@@ -327,45 +381,88 @@ class ChatComposerBar extends StatelessWidget {
     return Container(
       padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 12.h),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.borderLight)),
+        color: AppColors.background.withValues(alpha: 0.92),
+        border: Border(top: BorderSide(color: AppColors.borderLight.withValues(alpha: 0.6))),
       ),
       child: SafeArea(
         top: false,
         child: Row(
           children: [
-            Expanded(
-              child: TextField(
-                controller: controller,
-                decoration: InputDecoration(
-                  hintText: ChatStrings.messageHint,
-                  hintStyle: AppTextStyles.subtitle(fontSize: 14.sp).copyWith(
-                    color: AppColors.textMuted,
-                  ),
-                  filled: true,
-                  fillColor: AppColors.infoBackground,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 14.w,
-                    vertical: 10.h,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                    borderSide: BorderSide.none,
+            Material(
+              color: AppColors.surface,
+              shape: const CircleBorder(),
+              child: InkWell(
+                onTap: () {},
+                customBorder: const CircleBorder(),
+                child: SizedBox(
+                  width: 40.w,
+                  height: 40.w,
+                  child: Icon(
+                    Icons.photo_camera_outlined,
+                    size: 20.sp,
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ),
             ),
             SizedBox(width: 8.w),
+            Expanded(
+              child: Container(
+                height: 44.h,
+                padding: EdgeInsets.only(left: 14.w, right: 8.w),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(999.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.06),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: controller,
+                        style: AppTextStyles.subtitle(fontSize: 14.sp),
+                        decoration: InputDecoration(
+                          hintText: ChatStrings.messageHint,
+                          hintStyle: AppTextStyles.subtitle(fontSize: 14.sp).copyWith(
+                            color: AppColors.textMuted,
+                          ),
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      Icons.mic_none_rounded,
+                      size: 22.sp,
+                      color: AppColors.textMuted,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(width: 8.w),
             Material(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(12.r),
+              color: AppColors.accentLime,
+              shape: const CircleBorder(),
+              elevation: 0,
               child: InkWell(
                 onTap: onSend,
-                borderRadius: BorderRadius.circular(12.r),
+                customBorder: const CircleBorder(),
                 child: SizedBox(
                   width: 44.w,
                   height: 44.w,
-                  child: Icon(Icons.send_rounded, color: Colors.white, size: 20.sp),
+                  child: Icon(
+                    Icons.arrow_upward_rounded,
+                    color: AppColors.primaryDark,
+                    size: 22.sp,
+                  ),
                 ),
               ),
             ),

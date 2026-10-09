@@ -50,18 +50,32 @@ class ItemGridCard extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                ColoredBox(color: item.imageColor),
-                Center(
-                  child: Icon(
-                    Icons.image_outlined,
-                    size: 36.sp,
-                    color: Colors.white.withValues(alpha: 0.7),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        item.imageColor,
+                        Color.lerp(item.imageColor, Colors.black, 0.25)!,
+                      ],
+                    ),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.photo_outlined,
+                      size: 32.sp,
+                      color: Colors.white.withValues(alpha: 0.35),
+                    ),
                   ),
                 ),
                 Positioned(
                   left: 8.w,
                   top: 8.h,
-                  child: _Badge(text: item.badge),
+                  child: _Badge(
+                    text: item.badge,
+                    showLiveDot: item.badge.toLowerCase() == 'available',
+                  ),
                 ),
                 Positioned(
                   right: 8.w,
@@ -96,40 +110,89 @@ class ItemGridCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.label(fontSize: 13.sp),
                 ),
-                SizedBox(height: 4.h),
-                Text(
-                  '${HomeStrings.wants}: ${item.wants}',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.caption(fontSize: 11.sp).copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
                 SizedBox(height: 6.h),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 16.w,
+                      height: 16.w,
+                      margin: EdgeInsets.only(top: 2.h),
+                      decoration: const BoxDecoration(
+                        color: AppColors.accentLime,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.swap_horiz_rounded,
+                        size: 10.sp,
+                        color: AppColors.primaryDark,
+                      ),
+                    ),
+                    SizedBox(width: 5.w),
+                    Expanded(
+                      child: Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '${HomeStrings.wants}: ',
+                              style: AppTextStyles.caption(fontSize: 10.sp)
+                                  .copyWith(
+                                color: AppColors.textMuted,
+                                fontWeight: FontWeight.w600,
+                                height: 1.35,
+                              ),
+                            ),
+                            TextSpan(
+                              text: item.wants,
+                              style: AppTextStyles.caption(fontSize: 10.sp)
+                                  .copyWith(
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w500,
+                                height: 1.35,
+                              ),
+                            ),
+                          ],
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 5.h),
                 Text(
                   '${item.location} • ${item.postedAgo}',
-                  style: AppTextStyles.caption(fontSize: 10.sp),
+                  style: AppTextStyles.caption(fontSize: 9.sp).copyWith(
+                    color: AppColors.textMuted,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
                 if (showProposeButton) ...[
-                  SizedBox(height: 10.h),
+                  SizedBox(height: 8.h),
                   SizedBox(
                     width: double.infinity,
-                    height: 36.h,
-                    child: FilledButton(
+                    height: 34.h,
+                    child: FilledButton.icon(
                       onPressed: onProposeTap ?? onTap,
+                      icon: Icon(
+                        Icons.swap_horiz_rounded,
+                        size: 16.sp,
+                        color: AppColors.primaryDark,
+                      ),
+                      label: Text(
+                        HomeStrings.proposeSwap,
+                        style: AppTextStyles.label(fontSize: 11.sp).copyWith(
+                          color: AppColors.primaryDark,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                       style: FilledButton.styleFrom(
                         backgroundColor: AppColors.accentLime,
                         foregroundColor: AppColors.primaryDark,
                         elevation: 0,
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.r),
-                        ),
-                      ),
-                      child: Text(
-                        HomeStrings.proposeSwap,
-                        style: AppTextStyles.label(fontSize: 12.sp).copyWith(
-                          color: AppColors.primaryDark,
-                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ),
@@ -147,9 +210,10 @@ class ItemGridCard extends StatelessWidget {
 }
 
 class _Badge extends StatelessWidget {
-  const _Badge({required this.text});
+  const _Badge({required this.text, this.showLiveDot = false});
 
   final String text;
+  final bool showLiveDot;
 
   @override
   Widget build(BuildContext context) {
@@ -159,12 +223,28 @@ class _Badge extends StatelessWidget {
         color: Colors.white.withValues(alpha: 0.92),
         borderRadius: BorderRadius.circular(6.r),
       ),
-      child: Text(
-        text,
-        style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
-          fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (showLiveDot) ...[
+            Container(
+              width: 6.w,
+              height: 6.w,
+              decoration: const BoxDecoration(
+                color: AppColors.accentGreen,
+                shape: BoxShape.circle,
+              ),
+            ),
+            SizedBox(width: 5.w),
+          ],
+          Text(
+            text,
+            style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ],
       ),
     );
   }

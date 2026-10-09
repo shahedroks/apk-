@@ -11,12 +11,18 @@ class SwapPrimaryButton extends StatelessWidget {
     required this.onPressed,
     this.icon,
     this.isLoading = false,
+    this.iconAtEnd = false,
+    this.iconAtStart = false,
   });
 
   final String label;
   final VoidCallback? onPressed;
   final IconData? icon;
   final bool isLoading;
+  /// When true, label stays centered and icon sits on the trailing edge (auth screens).
+  final bool iconAtEnd;
+  /// When true, icon is placed before the label (check-email primary CTA).
+  final bool iconAtStart;
 
   @override
   Widget build(BuildContext context) {
@@ -42,19 +48,37 @@ class SwapPrimaryButton extends StatelessWidget {
                   color: Colors.white,
                 ),
               )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    label,
-                    style: AppTextStyles.button(fontSize: 15.sp),
+            : icon != null && iconAtEnd
+                ? Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Text(
+                        label,
+                        style: AppTextStyles.button(fontSize: 15.sp),
+                      ),
+                      Positioned(
+                        right: 20.w,
+                        child: Icon(icon, size: 20.sp, color: Colors.white),
+                      ),
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (icon != null && iconAtStart) ...[
+                        Icon(icon, size: 20.sp, color: Colors.white),
+                        SizedBox(width: 10.w),
+                      ],
+                      Text(
+                        label,
+                        style: AppTextStyles.button(fontSize: 15.sp),
+                      ),
+                      if (icon != null && !iconAtStart && !iconAtEnd) ...[
+                        SizedBox(width: 8.w),
+                        Icon(icon, size: 18.sp, color: Colors.white),
+                      ],
+                    ],
                   ),
-                  if (icon != null) ...[
-                    SizedBox(width: 8.w),
-                    Icon(icon, size: 18.sp, color: Colors.white),
-                  ],
-                ],
-              ),
       ),
     );
   }

@@ -8,6 +8,7 @@ import '../../../../core/constants/home_strings.dart';
 import '../../../../core/routes/app_router.dart';
 import '../../../../core/theme/text_styles.dart';
 import '../providers/home_ui_provider.dart';
+import 'swap_brand_mark.dart';
 
 class HomeBottomNav extends ConsumerWidget {
   const HomeBottomNav({super.key});
@@ -43,10 +44,7 @@ class HomeBottomNav extends ConsumerWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _NavItem(
-                icon: Icons.explore_outlined,
-                activeIcon: Icons.explore,
-                label: HomeStrings.navDiscover,
+              _DiscoverNavItem(
                 selected: !onProfileRoute && index == 0,
                 onTap: () => _goToTab(context, ref, 0),
               ),
@@ -76,6 +74,41 @@ class HomeBottomNav extends ConsumerWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DiscoverNavItem extends StatelessWidget {
+  const _DiscoverNavItem({required this.selected, required this.onTap});
+
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? AppColors.primary : AppColors.textMuted;
+    return InkWell(
+      onTap: onTap,
+      child: SizedBox(
+        width: 64.w,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (selected)
+              SwapBrandMark(size: 26.w)
+            else
+              Icon(Icons.explore_outlined, size: 22.sp, color: color),
+            SizedBox(height: 2.h),
+            Text(
+              HomeStrings.navDiscover,
+              style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
+                color: color,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -134,7 +167,8 @@ class _FabNavItem extends StatelessWidget {
       offset: Offset(0, -10.h),
       child: Material(
         color: AppColors.accentLime,
-        elevation: 4,
+        elevation: 6,
+        shadowColor: AppColors.primary.withValues(alpha: 0.25),
         shape: const CircleBorder(),
         child: InkWell(
           onTap: onTap,

@@ -32,7 +32,10 @@ class ChatThread {
     required this.timeAgo,
     required this.itemTitle,
     required this.itemColor,
+    this.avatarColor = const Color(0xFFDEE9FC),
     this.isOnline = false,
+    this.isVerified = false,
+    this.unreadCount = 0,
   });
 
   final String id;
@@ -41,7 +44,10 @@ class ChatThread {
   final String timeAgo;
   final String itemTitle;
   final Color itemColor;
+  final Color avatarColor;
   final bool isOnline;
+  final bool isVerified;
+  final int unreadCount;
 }
 
 enum SwapProgressStep { proposed, accepted, meetup, completed }
@@ -59,6 +65,7 @@ class ActiveSwap {
     required this.activeStep,
     this.needsReview = false,
     this.reviewStepLabel,
+    this.stepDates = const [],
   });
 
   final String id;
@@ -72,4 +79,5 @@ class ActiveSwap {
   final SwapProgressStep activeStep;
   final bool needsReview;
   final String? reviewStepLabel;
+  final List<String> stepDates;
 }

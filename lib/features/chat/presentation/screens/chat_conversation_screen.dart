@@ -57,22 +57,31 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.background.withValues(alpha: 0.85),
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        leadingWidth: 44.w,
+        titleSpacing: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new_rounded, size: 18.sp),
           onPressed: () => context.pop(),
         ),
         title: Text(
           ChatStrings.chatConversation,
-          style: AppTextStyles.screenTitle(fontSize: 17.sp),
+          style: AppTextStyles.screenTitle(fontSize: 18.sp).copyWith(
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.45,
+            color: AppColors.primaryDark,
+          ),
         ),
-        centerTitle: true,
+        centerTitle: false,
         actions: [
           IconButton(
-            icon: Icon(Icons.more_vert, size: 22.sp),
+            icon: Icon(Icons.more_vert, size: 22.sp, color: AppColors.textSecondary),
             onPressed: () => showMockSnackBar(context, 'Chat options (mock)'),
           ),
+          SizedBox(width: 4.w),
         ],
       ),
       body: Column(

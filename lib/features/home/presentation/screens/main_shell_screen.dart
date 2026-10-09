@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/screen_safe_area.dart';
 import '../providers/home_ui_provider.dart';
 import '../widgets/home_bottom_nav.dart';
 import 'chats_list_screen.dart';
@@ -33,14 +34,17 @@ class MainShellScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: IndexedStack(
-        index: bodyIndex,
-        children: const [
-          DiscoverScreen(),
-          SavedItemsScreen(),
-          MySwapsScreen(),
-          ChatsListScreen(),
-        ],
+      body: ScreenSafeArea(
+        bottom: false,
+        child: IndexedStack(
+          index: bodyIndex,
+          children: const [
+            DiscoverScreen(),
+            SavedItemsScreen(),
+            MySwapsScreen(),
+            ChatsListScreen(),
+          ],
+        ),
       ),
       bottomNavigationBar: const HomeBottomNav(),
     );

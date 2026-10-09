@@ -7,6 +7,9 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/routes/app_router.dart';
 import '../../../../core/theme/text_styles.dart';
 import '../../../../core/utils/validators.dart';
+import '../widgets/auth_form_card.dart';
+import '../widgets/auth_security_header.dart';
+import '../widgets/forgot_password_illustration.dart';
 import '../widgets/swap_auth_extras.dart';
 import '../widgets/swap_primary_button.dart';
 import '../widgets/swap_text_field.dart';
@@ -44,63 +47,39 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                _CircleBackButton(onTap: () => context.pop()),
-                const Spacer(),
-                Container(
-                  width: 8.w,
-                  height: 8.w,
-                  decoration: const BoxDecoration(
-                    color: AppColors.accentLime,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                SizedBox(width: 6.w),
-                Text(
-                  AppStrings.accountSecurity,
-                  style: AppTextStyles.overline(fontSize: 10.sp),
-                ),
-              ],
-            ),
-            SizedBox(height: 12.h),
-            Container(
-              padding: EdgeInsets.all(20.w),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(12.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 2,
-                    offset: const Offset(0, 1),
-                  ),
-                ],
-              ),
+            AuthSecurityHeader(onBack: () => context.pop()),
+            SizedBox(height: 16.h),
+            AuthFormCard(
               child: Column(
                 children: [
-                  _EnvelopeIllustration(),
-                  SizedBox(height: 16.h),
+                  const ForgotPasswordIllustration(),
+                  SizedBox(height: 12.h),
                   Text(
                     AppStrings.forgotPasswordTitle,
                     textAlign: TextAlign.center,
-                    style: AppTextStyles.screenTitle(fontSize: 20.sp),
+                    style: AppTextStyles.screenTitle(fontSize: 22.sp).copyWith(
+                      color: AppColors.primary,
+                    ),
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 10.h),
                   Text(
                     AppStrings.forgotPasswordBody,
                     textAlign: TextAlign.center,
-                    style: AppTextStyles.subtitle(fontSize: 13.sp),
+                    style: AppTextStyles.subtitle(fontSize: 13.sp).copyWith(
+                      height: 1.45,
+                    ),
                   ),
                   SizedBox(height: 20.h),
                   SwapTextField(
                     label: AppStrings.email,
                     controller: _emailController,
+                    hintText: 'eco.trader@swapit.com',
                     keyboardType: TextInputType.emailAddress,
                     validator: Validators.email,
                     helperText: AppStrings.registryHint,
+                    fillColor: AppColors.infoBackground,
                     prefixIcon: Icon(
-                      Icons.mail_outline,
+                      Icons.mail_outline_rounded,
                       size: 20.sp,
                       color: AppColors.textMuted,
                     ),
@@ -114,30 +93,45 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   SwapPrimaryButton(
                     label: AppStrings.sendResetLink,
                     icon: Icons.arrow_forward_rounded,
+                    iconAtEnd: true,
                     onPressed: _sendResetLink,
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 24.h),
+            SizedBox(height: 28.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.lock_outline, size: 14.sp, color: AppColors.textMuted),
-                SizedBox(width: 6.w),
+                Icon(
+                  Icons.verified_user_outlined,
+                  size: 16.sp,
+                  color: AppColors.accentGreen,
+                ),
+                SizedBox(width: 8.w),
                 Flexible(
                   child: Text(
                     AppStrings.securedInfra,
                     textAlign: TextAlign.center,
-                    style: AppTextStyles.caption(fontSize: 11.sp),
+                    style: AppTextStyles.caption(fontSize: 11.sp).copyWith(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 16.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            SizedBox(height: 20.h),
+            Wrap(
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
+                Icon(
+                  Icons.arrow_back_rounded,
+                  size: 16.sp,
+                  color: AppColors.textMuted,
+                ),
+                SizedBox(width: 6.w),
                 Text(
                   '${AppStrings.rememberPassword} ',
                   style: AppTextStyles.subtitle(fontSize: 13.sp),
@@ -149,6 +143,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     style: AppTextStyles.label(fontSize: 13.sp).copyWith(
                       color: AppColors.accentGreen,
                       decoration: TextDecoration.underline,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
@@ -156,80 +151,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _CircleBackButton extends StatelessWidget {
-  const _CircleBackButton({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.borderLight,
-      shape: const CircleBorder(),
-      child: InkWell(
-        onTap: onTap,
-        customBorder: const CircleBorder(),
-        child: SizedBox(
-          width: 40.w,
-          height: 40.w,
-          child: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 16.sp,
-            color: AppColors.textPrimary,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _EnvelopeIllustration extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 120.h,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            width: 100.w,
-            height: 100.w,
-            decoration: BoxDecoration(
-              color: AppColors.mintGlow.withValues(alpha: 0.5),
-              shape: BoxShape.circle,
-            ),
-          ),
-          Container(
-            width: 72.w,
-            height: 72.w,
-            decoration: BoxDecoration(
-              color: AppColors.accentLime,
-              borderRadius: BorderRadius.circular(16.r),
-            ),
-            child: Icon(
-              Icons.mail_outline_rounded,
-              size: 36.sp,
-              color: AppColors.primaryDark,
-            ),
-          ),
-          Positioned(
-            right: 72.w,
-            bottom: 28.h,
-            child: Container(
-              padding: EdgeInsets.all(6.w),
-              decoration: const BoxDecoration(
-                color: AppColors.primaryDark,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.vpn_key_outlined, size: 14.sp, color: Colors.white),
-            ),
-          ),
-        ],
       ),
     );
   }

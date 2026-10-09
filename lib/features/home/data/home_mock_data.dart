@@ -14,18 +14,14 @@ class HomeMockData {
   ];
 
   static const List<String> savedCategories = [
-    'All Saved',
+    'All Saved (4)',
     'Electronics',
     'Home & Plant',
     'Books',
     'Clothes',
   ];
 
-  static const List<String> chatFilters = [
-    'All Messages',
-    'Active Swaps',
-    'Test Empty',
-  ];
+  static const int activeSwapsChatCount = 2;
 
   static final List<SwapListing> discoverItems = [
     SwapListing(
@@ -61,7 +57,7 @@ class HomeMockData {
       wants: 'Keyboard or Monitor',
       location: 'Jersey City, NJ',
       postedAgo: '1d ago',
-      badge: 'Like New',
+      badge: 'Mint',
       imageColor: Color(0xFF37474F),
     ),
   ];
@@ -117,7 +113,10 @@ class HomeMockData {
       timeAgo: '2m ago',
       itemTitle: 'Vintage Turntable',
       itemColor: Color(0xFF37474F),
+      avatarColor: Color(0xFFDEE9FC),
       isOnline: true,
+      isVerified: true,
+      unreadCount: 1,
     ),
     ChatThread(
       id: 'c2',
@@ -126,6 +125,7 @@ class HomeMockData {
       timeAgo: '1h ago',
       itemTitle: 'Mid-Century Lamp',
       itemColor: Color(0xFFD4A574),
+      avatarColor: Color(0xFFE8F5E9),
     ),
     ChatThread(
       id: 'c3',
@@ -134,6 +134,7 @@ class HomeMockData {
       timeAgo: '3h ago',
       itemTitle: 'Mech Keyboard',
       itemColor: Color(0xFF5C6BC0),
+      avatarColor: Color(0xFFE3F2FD),
     ),
   ];
 
@@ -147,6 +148,7 @@ class HomeMockData {
         youGet: discoverItems[3],
         completedSteps: 2,
         activeStep: SwapProgressStep.meetup,
+        stepDates: ['Nov 6', 'Nov 7', 'Nov 8', '—'],
       );
 
   static ActiveSwap get reviewSwap => ActiveSwap(
@@ -161,5 +163,6 @@ class HomeMockData {
         activeStep: SwapProgressStep.proposed,
         needsReview: true,
         reviewStepLabel: 'Step 1 of 4',
+        stepDates: ['—', '—', '—', '—'],
       );
 }

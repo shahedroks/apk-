@@ -6,17 +6,24 @@ class HomeStrings {
   static const String chatsList = 'Chats List';
   static const String mySwaps = 'My Swaps';
 
-  static const String searchHint = 'Search items, wants, or neighbors...';
+  static const String searchHint = 'Search items, trade wants, or tags...';
+  static const String searchConversationsHint =
+      'Search conversations or items...';
+  static const String allMessages = 'All Messages';
+  static const String testEmpty = 'Test Empty';
   static const String goodMorning = 'Good morning, Sara';
   static const String readyToSwap = 'Ready to swap today?';
   static const String circularExchange = 'Circular Exchange';
+  static const String promoHeadline =
+      'Give great items a second life nearby.';
   static const String promoBody =
       'You may not need it, but someone else might. Swap nearby items easily and keep goods in circulation.';
   static const String itemsYouMayLike = 'Items you may like';
+  static const String nearbyBadge = '4 Nearby';
   static const String viewAll = 'View all';
   static const String wants = 'Wants';
-  static const String savedBanner =
-      'You have 4 saved treasures. Ready to circulate & swap';
+  static const String savedBannerLine1 = 'You have 4 saved treasures.';
+  static const String savedBannerLine2 = 'Ready to circulate & swap';
   static const String manage = 'Manage';
   static const String proposeSwap = 'Propose Swap';
   static const String activeSwaps = 'Active Swaps';
@@ -27,7 +34,7 @@ class HomeStrings {
   static const String impactStat = '14.2 kg waste diverted from landfills!';
   static const String youGive = 'You give';
   static const String youGet = 'You get';
-  static const String exchangeProgress = 'Exchange progress';
+  static const String exchangeProgress = 'EXCHANGE PROGRESS';
   static const String openChat = 'Open Chat';
   static const String confirmSwap = 'Confirm Swap';
   static const String reviewOffer = 'Review Offer';

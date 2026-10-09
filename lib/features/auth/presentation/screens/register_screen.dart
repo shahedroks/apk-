@@ -7,6 +7,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/routes/app_router.dart';
 import '../../../../core/theme/text_styles.dart';
 import '../../../../core/utils/validators.dart';
+import '../widgets/auth_form_card.dart';
 import '../widgets/auth_mode_toggle.dart';
 import '../widgets/swap_auth_extras.dart';
 import '../widgets/swap_brand_header.dart';
@@ -55,7 +56,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Text(
               AppStrings.createAccount,
               textAlign: TextAlign.center,
-              style: AppTextStyles.screenTitle(fontSize: 22.sp),
+              style: AppTextStyles.screenTitle(fontSize: 24.sp).copyWith(
+                color: AppColors.primary,
+              ),
             ),
             SizedBox(height: 4.h),
             Text(
@@ -70,19 +73,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               onSignUpTap: () {},
             ),
             SizedBox(height: 16.h),
-            Container(
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(12.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 2,
-                    offset: const Offset(0, 1),
-                  ),
-                ],
-              ),
+            AuthFormCard(
               child: Column(
                 children: [
                   SwapTextField(
@@ -137,6 +128,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   SwapPrimaryButton(
                     label: AppStrings.signUp,
                     icon: Icons.arrow_forward_rounded,
+                    iconAtEnd: true,
                     onPressed: _submit,
                   ),
                 ],
@@ -149,8 +141,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             SizedBox(height: 20.h),
             const SwapStatsBanner(),
             SizedBox(height: 20.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Text(
                   '${AppStrings.haveAccount} ',

@@ -9,6 +9,8 @@ import '../../../../core/routes/app_router.dart';
 import '../../../../core/theme/text_styles.dart';
 import '../../../../core/utils/mock_actions.dart';
 import '../providers/resend_timer_provider.dart';
+import '../widgets/auth_security_header.dart';
+import '../widgets/check_email_illustration.dart';
 import '../widgets/swap_auth_extras.dart';
 import '../widgets/swap_primary_button.dart';
 
@@ -22,16 +24,18 @@ class CheckEmailScreen extends ConsumerWidget {
     final seconds = ref.watch(resendTimerProvider);
 
     return SwapAuthScaffold(
+      padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 24.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          AuthSecurityHeader(onBack: () => context.pop()),
           SizedBox(height: 12.h),
-          _CheckIllustration(),
-          SizedBox(height: 20.h),
+          const CheckEmailIllustration(),
+          SizedBox(height: 18.h),
           Text(
             AppStrings.checkEmailTitle,
             textAlign: TextAlign.center,
-            style: AppTextStyles.screenTitle(fontSize: 22.sp),
+            style: AppTextStyles.screenTitle(fontSize: 24.sp),
           ),
           SizedBox(height: 8.h),
           Text(
@@ -39,9 +43,9 @@ class CheckEmailScreen extends ConsumerWidget {
             textAlign: TextAlign.center,
             style: AppTextStyles.subtitle(fontSize: 14.sp),
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: 14.h),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+            padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 11.h),
             decoration: BoxDecoration(
               color: AppColors.infoBackground,
               borderRadius: BorderRadius.circular(999.r),
@@ -50,13 +54,20 @@ class CheckEmailScreen extends ConsumerWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('@ ', style: AppTextStyles.label(fontSize: 14.sp)),
+                Text(
+                  '@ ',
+                  style: AppTextStyles.label(fontSize: 14.sp).copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
                 Flexible(
                   child: Text(
                     email,
                     textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.label(fontSize: 14.sp).copyWith(
-                      color: AppColors.primary,
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -68,11 +79,12 @@ class CheckEmailScreen extends ConsumerWidget {
             padding: EdgeInsets.all(14.w),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(12.r),
+              borderRadius: BorderRadius.circular(14.r),
+              border: Border.all(color: AppColors.borderLight),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 2,
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 4,
                   offset: const Offset(0, 1),
                 ),
               ],
@@ -85,28 +97,29 @@ class CheckEmailScreen extends ConsumerWidget {
                   height: 40.w,
                   decoration: BoxDecoration(
                     color: AppColors.infoBackground,
-                    borderRadius: BorderRadius.circular(8.r),
+                    borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Icon(
-                    Icons.timer_outlined,
-                    color: AppColors.primaryDark,
+                    Icons.schedule_outlined,
+                    color: AppColors.primary,
                     size: 22.sp,
                   ),
                 ),
-                SizedBox(width: 10.w),
+                SizedBox(width: 12.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         AppStrings.oneTimeLink,
-                        style: AppTextStyles.label(fontSize: 13.sp),
+                        style: AppTextStyles.label(fontSize: 14.sp),
                       ),
                       SizedBox(height: 4.h),
                       Text(
                         AppStrings.oneTimeLinkBody,
                         style: AppTextStyles.caption(fontSize: 12.sp).copyWith(
                           color: AppColors.textSecondary,
+                          height: 1.35,
                         ),
                       ),
                     ],
@@ -115,12 +128,13 @@ class CheckEmailScreen extends ConsumerWidget {
               ],
             ),
           ),
-          SizedBox(height: 20.h),
-          _NextStepsCard(),
+          SizedBox(height: 18.h),
+          const _NextStepsCard(),
           SizedBox(height: 20.h),
           SwapPrimaryButton(
             label: AppStrings.openEmailApp,
-            icon: Icons.mail_outline,
+            icon: Icons.mail_outline_rounded,
+            iconAtStart: true,
             onPressed: () => showMockSnackBar(context, 'Opening mail app (mock)'),
           ),
           SizedBox(height: 12.h),
@@ -129,95 +143,63 @@ class CheckEmailScreen extends ConsumerWidget {
             icon: Icons.arrow_back_rounded,
             onPressed: () => context.go(AppRouter.login),
           ),
-          SizedBox(height: 20.h),
-          Wrap(
-            alignment: WrapAlignment.center,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Text(
-                '${AppStrings.didntReceive} ',
-                style: AppTextStyles.subtitle(fontSize: 12.sp),
-              ),
-              Text(
-                AppStrings.checkSpam,
-                style: AppTextStyles.subtitle(fontSize: 12.sp),
-              ),
-              if (seconds > 0)
-                Text(
-                  ' ${AppStrings.resend} in ${seconds}s',
-                  style: AppTextStyles.label(fontSize: 12.sp).copyWith(
-                    color: AppColors.accentGreen,
-                  ),
-                )
-              else
-                GestureDetector(
-                  onTap: () => ref.read(resendTimerProvider.notifier).resend(),
-                  child: Text(
-                    ' ${AppStrings.resend}',
+          SizedBox(height: 22.h),
+          Text.rich(
+            TextSpan(
+              style: AppTextStyles.subtitle(fontSize: 12.sp),
+              children: [
+                TextSpan(text: '${AppStrings.didntReceive} '),
+                TextSpan(text: '${AppStrings.checkSpam} '),
+                if (seconds > 0)
+                  TextSpan(
+                    text: '${AppStrings.resend} in ${seconds}s',
                     style: AppTextStyles.label(fontSize: 12.sp).copyWith(
                       color: AppColors.accentGreen,
-                      decoration: TextDecoration.underline,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  )
+                else
+                  WidgetSpan(
+                    alignment: PlaceholderAlignment.baseline,
+                    baseline: TextBaseline.alphabetic,
+                    child: GestureDetector(
+                      onTap: () => ref.read(resendTimerProvider.notifier).resend(),
+                      child: Text(
+                        AppStrings.resend,
+                        style: AppTextStyles.label(fontSize: 12.sp).copyWith(
+                          color: AppColors.accentGreen,
+                          decoration: TextDecoration.underline,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
+            textAlign: TextAlign.center,
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: 18.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.verified_user_outlined, size: 14.sp, color: AppColors.textMuted),
+              Icon(
+                Icons.verified_user_outlined,
+                size: 15.sp,
+                color: AppColors.accentGreen,
+              ),
               SizedBox(width: 6.w),
-              Text(
-                AppStrings.securedBy,
-                style: AppTextStyles.caption(fontSize: 11.sp),
+              Flexible(
+                child: Text(
+                  AppStrings.securedBy,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.caption(fontSize: 11.sp).copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ],
           ),
-          SizedBox(height: 16.h),
-        ],
-      ),
-    );
-  }
-}
-
-class _CheckIllustration extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 120.h,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            width: 100.w,
-            height: 100.w,
-            decoration: BoxDecoration(
-              color: AppColors.mintGlow.withValues(alpha: 0.45),
-              shape: BoxShape.circle,
-            ),
-          ),
-          Icon(
-            Icons.mail_outline_rounded,
-            size: 48.sp,
-            color: AppColors.primaryDark,
-          ),
-          Positioned(
-            right: MediaQuery.sizeOf(context).width * 0.28,
-            bottom: 36.h,
-            child: Container(
-              padding: EdgeInsets.all(4.w),
-              decoration: const BoxDecoration(
-                color: AppColors.accentLime,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.check_rounded,
-                size: 18.sp,
-                color: AppColors.primaryDark,
-              ),
-            ),
-          ),
+          SizedBox(height: 12.h),
         ],
       ),
     );
@@ -225,13 +207,16 @@ class _CheckIllustration extends StatelessWidget {
 }
 
 class _NextStepsCard extends StatelessWidget {
+  const _NextStepsCard();
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: AppColors.infoBackground.withValues(alpha: 0.65),
-        borderRadius: BorderRadius.circular(12.r),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(color: AppColors.borderLight),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,41 +225,44 @@ class _NextStepsCard extends StatelessWidget {
             children: [
               Text(
                 AppStrings.nextSteps,
-                style: AppTextStyles.overline(fontSize: 10.sp),
+                style: AppTextStyles.overline(fontSize: 10.sp).copyWith(
+                  letterSpacing: 0.6,
+                  color: AppColors.textMuted,
+                ),
               ),
               const Spacer(),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                 decoration: BoxDecoration(
                   color: AppColors.accentLime,
-                  borderRadius: BorderRadius.circular(6.r),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Text(
                   AppStrings.step1of3,
                   style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
                     color: AppColors.primaryDark,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
             ],
           ),
           SizedBox(height: 16.h),
-          _StepRow(
+          const _StepRow(
             number: 1,
             active: true,
             title: AppStrings.step1Title,
             body: AppStrings.step1Body,
             showLine: true,
           ),
-          _StepRow(
+          const _StepRow(
             number: 2,
             active: false,
             title: AppStrings.step2Title,
             body: AppStrings.step2Body,
             showLine: true,
           ),
-          _StepRow(
+          const _StepRow(
             number: 3,
             active: false,
             title: AppStrings.step3Title,
@@ -311,17 +299,21 @@ class _StepRow extends StatelessWidget {
           Column(
             children: [
               Container(
-                width: 28.w,
-                height: 28.w,
+                width: 30.w,
+                height: 30.w,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: active ? AppColors.primary : AppColors.infoBorder,
+                  color: active ? AppColors.primary : AppColors.infoBackground,
                   shape: BoxShape.circle,
+                  border: active
+                      ? null
+                      : Border.all(color: AppColors.infoBorder),
                 ),
                 child: Text(
                   '$number',
-                  style: AppTextStyles.label(fontSize: 12.sp).copyWith(
-                    color: active ? Colors.white : AppColors.textMuted,
+                  style: AppTextStyles.label(fontSize: 13.sp).copyWith(
+                    color: active ? Colors.white : AppColors.primary,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -338,16 +330,17 @@ class _StepRow extends StatelessWidget {
           SizedBox(width: 12.w),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(bottom: showLine ? 16.h : 0),
+              padding: EdgeInsets.only(bottom: showLine ? 18.h : 0, top: 2.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: AppTextStyles.label(fontSize: 13.sp)),
-                  SizedBox(height: 2.h),
+                  Text(title, style: AppTextStyles.label(fontSize: 14.sp)),
+                  SizedBox(height: 4.h),
                   Text(
                     body,
-                    style: AppTextStyles.caption(fontSize: 11.sp).copyWith(
+                    style: AppTextStyles.caption(fontSize: 12.sp).copyWith(
                       color: AppColors.textSecondary,
+                      height: 1.3,
                     ),
                   ),
                 ],

@@ -3,11 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/theme/text_styles.dart';
+import 'swap_brand_mark.dart';
 
 class HomeTopBar extends StatelessWidget {
   const HomeTopBar({
     super.key,
     required this.title,
+    this.showTitle = true,
+    this.titledTabHeader = false,
     this.showBack = false,
     this.onBack,
     this.showSettings = false,
@@ -17,6 +20,9 @@ class HomeTopBar extends StatelessWidget {
   });
 
   final String title;
+  final bool showTitle;
+  /// Back chevron + left title (Saved / Swaps / Chats tabs).
+  final bool titledTabHeader;
   final bool showBack;
   final VoidCallback? onBack;
   final bool showSettings;
@@ -33,37 +39,53 @@ class HomeTopBar extends StatelessWidget {
             icon: Icons.arrow_back_ios_new_rounded,
             onTap: onBack ?? () => Navigator.maybePop(context),
           )
-        else
-          Container(
-            width: 36.w,
-            height: 36.w,
-            decoration: BoxDecoration(
-              color: AppColors.accentLime,
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            child: Icon(
-              Icons.swap_horiz_rounded,
-              size: 22.sp,
-              color: AppColors.primaryDark,
+        else if (titledTabHeader) ...[
+          InkWell(
+            onTap: onBack,
+            borderRadius: BorderRadius.circular(8.r),
+            child: Padding(
+              padding: EdgeInsets.all(6.w),
+              child: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                size: 18.sp,
+                color: AppColors.textPrimary,
+              ),
             ),
           ),
-        SizedBox(width: 10.w),
-        Expanded(
-          child: Text(
-            title,
-            style: AppTextStyles.screenTitle(fontSize: 20.sp),
+          SizedBox(width: 4.w),
+          Expanded(
+            child: Text(
+              title,
+              style: AppTextStyles.screenTitle(fontSize: 20.sp),
+            ),
           ),
+        ] else ...[
+          const SwapBrandMark(),
+          if (showTitle) ...[
+            SizedBox(width: 10.w),
+            Expanded(
+              child: Text(
+                title,
+                style: AppTextStyles.screenTitle(fontSize: 20.sp).copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primaryDark,
+                  letterSpacing: -0.4,
+                ),
+              ),
+            ),
+          ] else
+            const Spacer(),
+        ],
+        _CircleIconButton(
+          icon: Icons.notifications_none_rounded,
+          onTap: onNotificationTap,
         ),
+        if (showSettings) SizedBox(width: 8.w),
         if (showSettings)
           _CircleIconButton(
             icon: Icons.settings_outlined,
             onTap: onSettings,
           ),
-        if (showSettings) SizedBox(width: 8.w),
-        _CircleIconButton(
-          icon: Icons.notifications_none_rounded,
-          onTap: onNotificationTap,
-        ),
         SizedBox(width: 8.w),
         Material(
           color: AppColors.infoBackground,
@@ -73,8 +95,8 @@ class HomeTopBar extends StatelessWidget {
             customBorder: const CircleBorder(),
             child: CircleAvatar(
               radius: 18.r,
-              backgroundColor: Colors.transparent,
-              child: Icon(Icons.person, size: 20.sp, color: AppColors.primary),
+              backgroundColor: const Color(0xFF90A4AE),
+              child: Icon(Icons.person, size: 20.sp, color: Colors.white),
             ),
           ),
         ),

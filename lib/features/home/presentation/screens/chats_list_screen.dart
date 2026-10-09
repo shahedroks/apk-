@@ -8,10 +8,11 @@ import '../../../../core/routes/app_router.dart';
 import '../../../../core/constants/home_strings.dart';
 import '../../data/home_mock_data.dart';
 import '../providers/home_ui_provider.dart';
-import '../widgets/category_chip_bar.dart';
+import '../widgets/chat_filter_bar.dart';
 import '../widgets/chat_thread_tile.dart';
 import '../widgets/home_search_bar.dart';
 import '../widgets/home_top_bar.dart';
+import '../../../../core/utils/mock_actions.dart';
 
 class ChatsListScreen extends ConsumerWidget {
   const ChatsListScreen({super.key});
@@ -25,20 +26,26 @@ class ChatsListScreen extends ConsumerWidget {
       children: [
         HomeTopBar(
           title: HomeStrings.chatsList,
-          showBack: true,
-          onBack: () => ref.read(homeTabIndexProvider.notifier).state = 0,
           onProfileTap: () => context.push(AppRouter.profile),
           onNotificationTap: () => context.push(AppRouter.notifications),
         ),
         SizedBox(height: 14.h),
-        const HomeSearchBar(),
-        SizedBox(height: 14.h),
-        CategoryChipBar(
-          labels: HomeMockData.chatFilters,
-          selectedIndex: filter,
-          onSelected: (i) => ref.read(chatFilterProvider.notifier).state = i,
+        HomeSearchBar(
+          hint: HomeStrings.searchConversationsHint,
+          showFilterButton: false,
+          useWhiteField: true,
         ),
-        SizedBox(height: 14.h),
+        SizedBox(height: 8.h),
+        ChatFilterBar(
+          selectedIndex: filter,
+          activeSwapsCount: HomeMockData.activeSwapsChatCount,
+          onSelected: (i) => ref.read(chatFilterProvider.notifier).state = i,
+          onTestEmptyTap: () => showMockSnackBar(
+            context,
+            'Empty state preview (mock)',
+          ),
+        ),
+        SizedBox(height: 12.h),
         ...HomeMockData.chats.map(
           (thread) => ChatThreadTile(
             thread: thread,

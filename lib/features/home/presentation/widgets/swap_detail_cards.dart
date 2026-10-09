@@ -98,14 +98,24 @@ class _ItemThumb extends StatelessWidget {
         SizedBox(height: 6.h),
         ClipRRect(
           borderRadius: BorderRadius.circular(10.r),
-          child: ColoredBox(
-            color: item.imageColor,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  item.imageColor,
+                  Color.lerp(item.imageColor, Colors.black, 0.22)!,
+                ],
+              ),
+            ),
             child: SizedBox(
               height: 72.h,
               width: double.infinity,
               child: Icon(
-                Icons.inventory_2_outlined,
-                color: Colors.white.withValues(alpha: 0.85),
+                Icons.photo_outlined,
+                color: Colors.white.withValues(alpha: 0.4),
+                size: 28.sp,
               ),
             ),
           ),
@@ -128,10 +138,12 @@ class SwapProgressTimeline extends StatelessWidget {
     super.key,
     required this.completedSteps,
     required this.activeStep,
+    this.stepDates = const [],
   });
 
   final int completedSteps;
   final SwapProgressStep activeStep;
+  final List<String> stepDates;
 
   @override
   Widget build(BuildContext context) {
@@ -147,18 +159,24 @@ class SwapProgressTimeline extends StatelessWidget {
       children: [
         Text(
           HomeStrings.exchangeProgress,
-          style: AppTextStyles.label(fontSize: 13.sp),
+          style: AppTextStyles.overline(fontSize: 10.sp).copyWith(
+            letterSpacing: 0.6,
+            color: AppColors.textMuted,
+            fontWeight: FontWeight.w700,
+          ),
         ),
-        SizedBox(height: 10.h),
+        SizedBox(height: 12.h),
         ...steps.asMap().entries.map((entry) {
           final index = entry.key;
           final step = entry.value;
           final isDone = index < completedSteps;
           final isActive = step.step == activeStep;
           final isLast = index == steps.length - 1;
+          final date = index < stepDates.length ? stepDates[index] : '';
 
           return _TimelineRow(
             title: step.title,
+            dateLabel: date,
             isDone: isDone,
             isActive: isActive,
             showLine: !isLast,
@@ -178,55 +196,77 @@ class _StepData {
 class _TimelineRow extends StatelessWidget {
   const _TimelineRow({
     required this.title,
+    required this.dateLabel,
     required this.isDone,
     required this.isActive,
     required this.showLine,
   });
 
   final String title;
+  final String dateLabel;
   final bool isDone;
   final bool isActive;
   final bool showLine;
 
+  Widget _stepIndicator() {
+    if (isDone) {
+      return Container(
+        width: 22.w,
+        height: 22.w,
+        alignment: Alignment.center,
+        decoration: const BoxDecoration(
+          color: AppColors.primary,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(Icons.check_rounded, size: 14.sp, color: Colors.white),
+      );
+    }
+    if (isActive) {
+      return Container(
+        width: 22.w,
+        height: 22.w,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColors.accentLime,
+          shape: BoxShape.circle,
+          border: Border.all(color: AppColors.primary, width: 2),
+        ),
+        child: Container(
+          width: 7.w,
+          height: 7.w,
+          decoration: const BoxDecoration(
+            color: AppColors.primary,
+            shape: BoxShape.circle,
+          ),
+        ),
+      );
+    }
+    return Container(
+      width: 22.w,
+      height: 22.w,
+      decoration: BoxDecoration(
+        color: AppColors.infoBackground,
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.infoBorder),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final Color dotColor = isDone || isActive
-        ? AppColors.primary
-        : AppColors.infoBorder;
-
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Column(
             children: [
-              Container(
-                width: 22.w,
-                height: 22.w,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: dotColor,
-                  shape: BoxShape.circle,
-                ),
-                child: isDone
-                    ? Icon(Icons.check, size: 14.sp, color: Colors.white)
-                    : isActive
-                        ? Container(
-                            width: 8.w,
-                            height: 8.w,
-                            decoration: const BoxDecoration(
-                              color: AppColors.accentLime,
-                              shape: BoxShape.circle,
-                            ),
-                          )
-                        : null,
-              ),
+              _stepIndicator(),
               if (showLine)
                 Expanded(
                   child: Container(
                     width: 2,
                     margin: EdgeInsets.symmetric(vertical: 4.h),
-                    color: AppColors.infoBorder,
+                    color: isDone ? AppColors.primary.withValues(alpha: 0.35) : AppColors.infoBorder,
                   ),
                 ),
             ],
@@ -234,15 +274,28 @@ class _TimelineRow extends StatelessWidget {
           SizedBox(width: 10.w),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(bottom: showLine ? 12.h : 0, top: 2.h),
-              child: Text(
-                title,
-                style: AppTextStyles.subtitle(fontSize: 12.sp).copyWith(
-                  fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                  color: isActive || isDone
-                      ? AppColors.textPrimary
-                      : AppColors.textMuted,
-                ),
+              padding: EdgeInsets.only(bottom: showLine ? 14.h : 0, top: 2.h),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: AppTextStyles.subtitle(fontSize: 12.sp).copyWith(
+                        fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                        color: isActive || isDone
+                            ? AppColors.textPrimary
+                            : AppColors.textMuted,
+                      ),
+                    ),
+                  ),
+                  if (dateLabel.isNotEmpty)
+                    Text(
+                      dateLabel,
+                      style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
@@ -280,12 +333,9 @@ class ActiveSwapCard extends StatelessWidget {
           Row(
             children: [
               CircleAvatar(
-                radius: 16.r,
-                backgroundColor: AppColors.infoBackground,
-                child: Text(
-                  swap.partnerName.substring(0, 1),
-                  style: AppTextStyles.label(fontSize: 12.sp),
-                ),
+                radius: 18.r,
+                backgroundColor: const Color(0xFF78909C),
+                child: Icon(Icons.person, size: 20.sp, color: Colors.white),
               ),
               SizedBox(width: 8.w),
               Expanded(
@@ -328,13 +378,17 @@ class ActiveSwapCard extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                 decoration: BoxDecoration(
-                  color: AppColors.infoBackground,
+                  color: AppColors.mintGlow.withValues(alpha: 0.65),
                   borderRadius: BorderRadius.circular(8.r),
+                  border: Border.all(
+                    color: AppColors.accentLime.withValues(alpha: 0.5),
+                  ),
                 ),
                 child: Text(
                   swap.statusLabel,
                   style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
                     fontWeight: FontWeight.w700,
+                    color: AppColors.accentGreen,
                   ),
                 ),
               ),
@@ -346,35 +400,49 @@ class ActiveSwapCard extends StatelessWidget {
           SwapProgressTimeline(
             completedSteps: swap.completedSteps,
             activeStep: swap.activeStep,
+            stepDates: swap.stepDates,
           ),
           if (!swap.needsReview) ...[
             SizedBox(height: 14.h),
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
+                  child: OutlinedButton.icon(
                     onPressed: () => context.push(
                       AppRouter.chat('c1', name: swap.partnerName),
                     ),
+                    icon: Icon(Icons.chat_bubble_outline, size: 16.sp),
+                    label: Text(
+                      HomeStrings.openChat,
+                      style: AppTextStyles.label(fontSize: 12.sp),
+                    ),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.textPrimary,
+                      backgroundColor: AppColors.surface,
                       side: const BorderSide(color: AppColors.borderLight),
+                      padding: EdgeInsets.symmetric(vertical: 10.h),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.r),
                       ),
                     ),
-                    child: Text(HomeStrings.openChat),
                   ),
                 ),
                 SizedBox(width: 10.w),
                 Expanded(
                   child: FilledButton.icon(
                     onPressed: () => context.push(AppRouter.swapCompleted),
-                    icon: Icon(Icons.check_circle_outline, size: 18.sp),
-                    label: Text(HomeStrings.confirmSwap),
+                    icon: Icon(Icons.check_rounded, size: 18.sp, color: AppColors.primaryDark),
+                    label: Text(
+                      HomeStrings.confirmSwap,
+                      style: AppTextStyles.label(fontSize: 12.sp).copyWith(
+                        color: AppColors.primaryDark,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                     style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.textPrimary,
-                      foregroundColor: Colors.white,
+                      backgroundColor: AppColors.accentLime,
+                      foregroundColor: AppColors.primaryDark,
+                      padding: EdgeInsets.symmetric(vertical: 10.h),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.r),
                       ),

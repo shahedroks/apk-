@@ -6,10 +6,29 @@ import '../../../../core/constants/home_strings.dart';
 import '../../../../core/theme/text_styles.dart';
 
 class HomeSearchBar extends StatelessWidget {
-  const HomeSearchBar({super.key});
+  const HomeSearchBar({
+    super.key,
+    this.hint,
+    this.showFilterButton = true,
+    this.useWhiteField = false,
+    this.discoverStyle = false,
+  });
+
+  final String? hint;
+  final bool showFilterButton;
+  final bool useWhiteField;
+  /// Discover: #EFF4FF field + matching filter tile (no white border).
+  final bool discoverStyle;
 
   @override
   Widget build(BuildContext context) {
+    final fieldColor =
+        useWhiteField ? AppColors.surface : AppColors.infoBackground;
+    final shadowColor = useWhiteField
+        ? AppColors.primary.withValues(alpha: 0.04)
+        : Colors.black.withValues(alpha: 0.05);
+    final filterColor = discoverStyle ? AppColors.infoBackground : AppColors.surface;
+
     return Row(
       children: [
         Expanded(
@@ -17,13 +36,13 @@ class HomeSearchBar extends StatelessWidget {
             height: 48.h,
             padding: EdgeInsets.symmetric(horizontal: 14.w),
             decoration: BoxDecoration(
-              color: AppColors.infoBackground,
+              color: fieldColor,
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 2,
-                  offset: const Offset(0, 1),
+                  color: shadowColor,
+                  blurRadius: useWhiteField ? 12 : 2,
+                  offset: Offset(0, useWhiteField ? 2 : 1),
                 ),
               ],
             ),
@@ -33,10 +52,14 @@ class HomeSearchBar extends StatelessWidget {
                 SizedBox(width: 8.w),
                 Expanded(
                   child: Text(
-                    HomeStrings.searchHint,
+                    hint ?? HomeStrings.searchHint,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.subtitle(fontSize: 13.sp).copyWith(
-                      color: AppColors.textMuted,
+                    style: AppTextStyles.subtitle(
+                      fontSize: useWhiteField || discoverStyle ? 14.sp : 13.sp,
+                    ).copyWith(
+                      color: useWhiteField || discoverStyle
+                          ? AppColors.textMuted
+                          : AppColors.textMuted,
                     ),
                   ),
                 ),
@@ -44,21 +67,42 @@ class HomeSearchBar extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(width: 8.w),
-        Container(
-          width: 48.w,
-          height: 48.h,
-          decoration: BoxDecoration(
-            color: AppColors.surface,
+        if (showFilterButton) ...[
+          SizedBox(width: 8.w),
+          Material(
+            color: filterColor,
             borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(color: AppColors.borderLight),
+            elevation: 0,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12.r),
+              onTap: () {},
+              child: Container(
+                width: 48.w,
+                height: 48.h,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: discoverStyle
+                      ? null
+                      : Border.all(color: AppColors.borderLight),
+                  boxShadow: discoverStyle
+                      ? [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 2,
+                            offset: const Offset(0, 1),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Icon(
+                  Icons.tune_rounded,
+                  size: 16.5.sp,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
           ),
-          child: Icon(
-            Icons.tune_rounded,
-            size: 20.sp,
-            color: AppColors.textPrimary,
-          ),
-        ),
+        ],
       ],
     );
   }

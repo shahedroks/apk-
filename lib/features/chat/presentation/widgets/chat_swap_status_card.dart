@@ -10,13 +10,18 @@ class ChatSwapStatusCard extends StatelessWidget {
 
   final VoidCallback? onDetailsTap;
 
+  static const Color _cardBlue = Color(0xFFEFF4FF);
+  static const Color _thumbWash = Color(0xFFE6EEFF);
+  static const Color _statusGreen = Color(0xFF457000);
+
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
+      margin: EdgeInsets.only(bottom: 16.h),
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: AppColors.infoBackground,
+        color: _cardBlue,
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
@@ -49,14 +54,12 @@ class ChatSwapStatusCard extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 6.w),
-                    Flexible(
-                      child: Text(
-                        ChatStrings.swapInProgress,
-                        style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.accentGreen,
-                          letterSpacing: 0.25,
-                        ),
+                    Text(
+                      ChatStrings.swapInProgress,
+                      style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: _statusGreen,
+                        letterSpacing: 0.25,
                       ),
                     ),
                   ],
@@ -71,12 +74,14 @@ class ChatSwapStatusCard extends StatelessWidget {
                     Text(
                       ChatStrings.details,
                       style: AppTextStyles.label(fontSize: 11.sp).copyWith(
+                        fontWeight: FontWeight.w700,
                         color: AppColors.primaryDark,
                       ),
                     ),
+                    SizedBox(width: 2.w),
                     Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 10.sp,
+                      Icons.arrow_forward_rounded,
+                      size: 12.sp,
                       color: AppColors.primaryDark,
                     ),
                   ],
@@ -84,7 +89,7 @@ class ChatSwapStatusCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 10.h),
+          SizedBox(height: 8.h),
           Container(
             padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
@@ -101,19 +106,27 @@ class ChatSwapStatusCard extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: _SwapSide(
+                  child: _SwapSideRow(
                     label: ChatStrings.youOffer,
                     title: ChatStrings.yourKeyboard,
-                    color: const Color(0xFF5C6BC0),
+                    imageColor: const Color(0xFF5C6BC0),
+                    thumbWash: _thumbWash,
+                    mirror: false,
                   ),
                 ),
                 Container(
                   width: 32.w,
                   height: 32.w,
-                  margin: EdgeInsets.symmetric(horizontal: 4.w),
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: AppColors.accentLime,
                     shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: Icon(
                     Icons.swap_horiz_rounded,
@@ -122,11 +135,12 @@ class ChatSwapStatusCard extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: _SwapSide(
+                  child: _SwapSideRow(
                     label: ChatStrings.partnerName,
                     title: ChatStrings.partnerItem,
-                    color: const Color(0xFF37474F),
-                    alignEnd: true,
+                    imageColor: const Color(0xFF37474F),
+                    thumbWash: _thumbWash,
+                    mirror: true,
                   ),
                 ),
               ],
@@ -138,56 +152,91 @@ class ChatSwapStatusCard extends StatelessWidget {
   }
 }
 
-class _SwapSide extends StatelessWidget {
-  const _SwapSide({
+class _SwapSideRow extends StatelessWidget {
+  const _SwapSideRow({
     required this.label,
     required this.title,
-    required this.color,
-    this.alignEnd = false,
+    required this.imageColor,
+    required this.thumbWash,
+    required this.mirror,
   });
 
   final String label;
   final String title;
-  final Color color;
-  final bool alignEnd;
+  final Color imageColor;
+  final Color thumbWash;
+  final bool mirror;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment:
-          alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8.r),
-          child: ColoredBox(
-            color: color,
-            child: SizedBox(
-              width: 48.w,
-              height: 48.w,
-              child: Icon(
-                Icons.inventory_2_outlined,
-                color: Colors.white.withValues(alpha: 0.85),
-                size: 22.sp,
-              ),
+    final thumb = _ItemThumb(color: imageColor, wash: thumbWash);
+    final copy = Expanded(
+      child: Column(
+        crossAxisAlignment:
+            mirror ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
+              fontWeight: FontWeight.w700,
+              color: AppColors.textSecondary,
             ),
           ),
-        ),
-        SizedBox(height: 6.h),
-        Text(
-          label,
-          style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
-            fontWeight: FontWeight.w700,
-            color: AppColors.textSecondary,
+          Text(
+            title,
+            textAlign: mirror ? TextAlign.right : TextAlign.left,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.label(fontSize: 13.sp).copyWith(
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF121C2A),
+              height: 1.35,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return Row(
+      children: mirror
+          ? [copy, SizedBox(width: 8.w), thumb]
+          : [thumb, SizedBox(width: 8.w), copy],
+    );
+  }
+}
+
+class _ItemThumb extends StatelessWidget {
+  const _ItemThumb({required this.color, required this.wash});
+
+  final Color color;
+  final Color wash;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8.r),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: wash,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color.lerp(wash, color, 0.35)!,
+              Color.lerp(color, Colors.black, 0.12)!,
+            ],
           ),
         ),
-        Text(
-          title,
-          textAlign: alignEnd ? TextAlign.end : TextAlign.start,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.label(fontSize: 11.sp),
+        child: SizedBox(
+          width: 48.w,
+          height: 48.w,
+          child: Icon(
+            Icons.photo_outlined,
+            size: 22.sp,
+            color: Colors.white.withValues(alpha: 0.5),
+          ),
         ),
-      ],
+      ),
     );
   }
 }

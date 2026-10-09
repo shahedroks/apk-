@@ -22,11 +22,11 @@ class AuthModeToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 48.h,
+      height: 52.h,
       padding: EdgeInsets.all(4.w),
       decoration: BoxDecoration(
         color: AppColors.toggleTrack,
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(14.r),
       ),
       child: Row(
         children: [
@@ -69,26 +69,26 @@ class _Segment extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: selected ? AppColors.primary : Colors.transparent,
-      borderRadius: BorderRadius.circular(10.r),
+      borderRadius: BorderRadius.circular(11.r),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(10.r),
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
+        borderRadius: BorderRadius.circular(11.r),
+        child: SizedBox(
+          height: double.infinity,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 icon,
-                size: 16.sp,
+                size: 18.sp,
                 color: selected ? Colors.white : AppColors.textSecondary,
               ),
-              SizedBox(width: 6.w),
+              SizedBox(width: 8.w),
               Text(
                 label,
-                style: AppTextStyles.label(fontSize: 13.sp).copyWith(
+                style: AppTextStyles.label(fontSize: 14.sp).copyWith(
                   color: selected ? Colors.white : AppColors.textSecondary,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
                 ),
               ),
             ],

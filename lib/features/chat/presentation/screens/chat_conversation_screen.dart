@@ -91,7 +91,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
               padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
               children: [
                 ChatSwapStatusCard(
-                  onDetailsTap: () => context.push(AppRouter.incomingSwapOffer),
+                  onDetailsTap: () => context.push(AppRouter.incomingSwapOffer('1')),
                 ),
                 const ChatDateSeparator(label: ChatStrings.todaySeparator),
                 const IncomingChatBubble(

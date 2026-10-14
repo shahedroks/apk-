@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -48,7 +49,7 @@ class SwapSocialButtons extends StatelessWidget {
               onTap: () => showMockSnackBar(context, 'Google sign-in (mock)'),
             ),
           ),
-          SizedBox(width: 12.w),
+          SizedBox(width: 8.w),
           Expanded(
             child: _SocialChip(
               label: AppStrings.apple,
@@ -70,30 +71,43 @@ class _SocialChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.surface,
+      color: AppColors.infoBackground,
       borderRadius: BorderRadius.circular(12.r),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12.r),
         child: Container(
-          height: 46.h,
+          height: 44.h,
           alignment: Alignment.center,
           decoration: BoxDecoration(
+            color: AppColors.infoBackground,
             borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(color: AppColors.borderLight),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 2,
+                offset: const Offset(0, 1),
+              ),
+            ],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (label == AppStrings.google) _GoogleDots(),
+              if (label == AppStrings.google)
+                SvgPicture.asset(
+                  'assets/icons/google.svg',
+                  width: 18.w,
+                  height: 18.w,
+                ),
               if (label == AppStrings.apple)
-                Icon(Icons.apple, size: 20.sp, color: AppColors.textPrimary),
+                Icon(Icons.apple, size: 18.sp, color: AppColors.textPrimary),
               SizedBox(width: 8.w),
               Text(
                 label,
-                style: AppTextStyles.label(fontSize: 14.sp).copyWith(
+                style: AppTextStyles.label(fontSize: 11.sp).copyWith(
                   fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
                 ),
               ),
             ],
@@ -104,129 +118,66 @@ class _SocialChip extends StatelessWidget {
   }
 }
 
-class _GoogleDots extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 18.w,
-      height: 18.w,
-      child: Stack(
-        children: [
-          Positioned(
-            left: 0,
-            top: 0,
-            child: _dot(const Color(0xFF4285F4)),
-          ),
-          Positioned(
-            right: 0,
-            top: 0,
-            child: _dot(const Color(0xFF34A853)),
-          ),
-          Positioned(
-            left: 0,
-            bottom: 0,
-            child: _dot(const Color(0xFFFBBC05)),
-          ),
-          Positioned(
-            right: 0,
-            bottom: 0,
-            child: _dot(const Color(0xFFEA4335)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _dot(Color color) => Container(
-        width: 7.w,
-        height: 7.w,
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      );
-}
-
 class SwapStatsBanner extends StatelessWidget {
   const SwapStatsBanner({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: AppColors.mintGlow.withValues(alpha: 0.45),
-        borderRadius: BorderRadius.circular(14.r),
-        border: Border.all(color: AppColors.accentLime.withValues(alpha: 0.35)),
+        color: const Color(0xFFDEE9FC).withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(12.r),
       ),
       child: Row(
         children: [
           Container(
-            width: 40.w,
-            height: 40.w,
-            decoration: BoxDecoration(
+            width: 32.w,
+            height: 32.w,
+            decoration: const BoxDecoration(
               color: AppColors.accentLime,
-              borderRadius: BorderRadius.circular(20.r),
+              shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.eco_outlined,
-              color: AppColors.primaryDark,
-              size: 22.sp,
-            ),
-          ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Text(
-              AppStrings.itemsDiverted,
-              style: AppTextStyles.subtitle(fontSize: 13.sp).copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w600,
-                height: 1.35,
-              ),
+              color: AppColors.primary,
+              size: 14.sp,
             ),
           ),
           SizedBox(width: 8.w),
-          const _EcoSparkline(),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppStrings.itemsDivertedHeadline,
+                  style: AppTextStyles.label(fontSize: 11.sp).copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                    height: 1.2,
+                  ),
+                ),
+                Text(
+                  AppStrings.itemsDivertedSubline,
+                  style: AppTextStyles.overline(fontSize: 10.sp).copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0,
+                    height: 1.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            Icons.trending_up_rounded,
+            size: 14.sp,
+            color: AppColors.accentGreen,
+          ),
         ],
       ),
     );
   }
-}
-
-class _EcoSparkline extends StatelessWidget {
-  const _EcoSparkline();
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      size: Size(48.w, 28.h),
-      painter: _SparklinePainter(),
-    );
-  }
-}
-
-class _SparklinePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = AppColors.accentGreen
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final path = Path();
-    final points = [0.85, 0.7, 0.75, 0.55, 0.5, 0.35, 0.25];
-    for (var i = 0; i < points.length; i++) {
-      final x = size.width * (i / (points.length - 1));
-      final y = size.height * points[i];
-      if (i == 0) {
-        path.moveTo(x, y);
-      } else {
-        path.lineTo(x, y);
-      }
-    }
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class SwapInfoBox extends StatelessWidget {

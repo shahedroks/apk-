@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 
+enum ListingBadgeStyle {
+  /// Dark pill — e.g. Like New, Mint (`rgba(0,36,26,0.7)`).
+  conditionOverlay,
+  /// Solid green category tag — e.g. Potted.
+  categorySolid,
+  /// White pill + lime dot for live listings.
+  available,
+}
+
 class SwapListing {
   const SwapListing({
     required this.id,
@@ -9,6 +18,9 @@ class SwapListing {
     required this.postedAgo,
     required this.badge,
     required this.imageColor,
+    this.imageUrl,
+    this.swapDetail,
+    this.badgeStyle = ListingBadgeStyle.conditionOverlay,
     this.isSaved = false,
     this.isAvailable = true,
   });
@@ -20,6 +32,10 @@ class SwapListing {
   final String postedAgo;
   final String badge;
   final Color imageColor;
+  final String? imageUrl;
+  /// e.g. `Like New • Value ~$120` on swap cards.
+  final String? swapDetail;
+  final ListingBadgeStyle badgeStyle;
   final bool isSaved;
   final bool isAvailable;
 }
@@ -33,6 +49,8 @@ class ChatThread {
     required this.itemTitle,
     required this.itemColor,
     this.avatarColor = const Color(0xFFDEE9FC),
+    this.avatarUrl,
+    this.itemImageUrl,
     this.isOnline = false,
     this.isVerified = false,
     this.unreadCount = 0,
@@ -45,6 +63,8 @@ class ChatThread {
   final String itemTitle;
   final Color itemColor;
   final Color avatarColor;
+  final String? avatarUrl;
+  final String? itemImageUrl;
   final bool isOnline;
   final bool isVerified;
   final int unreadCount;
@@ -66,6 +86,9 @@ class ActiveSwap {
     this.needsReview = false,
     this.reviewStepLabel,
     this.stepDates = const [],
+    this.stepSubtitles = const [],
+    this.partnerSubtitle,
+    this.partnerAvatarUrl,
   });
 
   final String id;
@@ -80,4 +103,7 @@ class ActiveSwap {
   final bool needsReview;
   final String? reviewStepLabel;
   final List<String> stepDates;
+  final List<String?> stepSubtitles;
+  final String? partnerSubtitle;
+  final String? partnerAvatarUrl;
 }

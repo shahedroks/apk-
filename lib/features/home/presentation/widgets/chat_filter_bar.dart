@@ -19,13 +19,21 @@ class ChatFilterBar extends StatelessWidget {
   final int activeSwapsCount;
   final VoidCallback? onTestEmptyTap;
 
+  static const _activeGreen = Color(0xFF0A2E22);
+  static const _trackGray = Color(0xFFF8F9F8);
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Expanded(
-          child: SizedBox(
-            height: 36.h,
+          child: Container(
+            height: 40.h,
+            padding: EdgeInsets.all(4.w),
+            decoration: BoxDecoration(
+              color: _trackGray,
+              borderRadius: BorderRadius.circular(999.r),
+            ),
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
@@ -34,12 +42,19 @@ class ChatFilterBar extends StatelessWidget {
                   isActive: selectedIndex == 0,
                   onTap: () => onSelected(0),
                 ),
-                SizedBox(width: 8.w),
+                SizedBox(width: 4.w),
                 _FilterChip(
                   label: HomeStrings.activeSwaps,
                   isActive: selectedIndex == 1,
                   badge: '$activeSwapsCount',
                   onTap: () => onSelected(1),
+                ),
+                SizedBox(width: 4.w),
+                _FilterChip(
+                  label: HomeStrings.testEmpty,
+                  isActive: selectedIndex == 2,
+                  leadingIcon: Icons.swap_horiz_rounded,
+                  onTap: () => onSelected(2),
                 ),
               ],
             ),
@@ -50,35 +65,26 @@ class ChatFilterBar extends StatelessWidget {
           onTap: onTestEmptyTap,
           child: Container(
             height: 32.h,
-            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: AppColors.infoBackground,
               borderRadius: BorderRadius.circular(999.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 2,
-                  offset: const Offset(0, 1),
-                ),
-              ],
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Icon(
+                  Icons.swap_horiz_rounded,
+                  size: 12.sp,
+                  color: AppColors.accentGreen,
+                ),
+                SizedBox(width: 4.w),
                 Text(
                   HomeStrings.testEmpty,
-                  style: AppTextStyles.label(fontSize: 13.sp).copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                SizedBox(width: 6.w),
-                Container(
-                  width: 8.w,
-                  height: 8.w,
-                  decoration: const BoxDecoration(
-                    color: AppColors.accentLime,
-                    shape: BoxShape.circle,
+                  style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: _activeGreen,
+                    height: 1,
                   ),
                 ),
               ],
@@ -96,12 +102,14 @@ class _FilterChip extends StatelessWidget {
     required this.isActive,
     required this.onTap,
     this.badge,
+    this.leadingIcon,
   });
 
   final String label;
   final bool isActive;
   final VoidCallback onTap;
   final String? badge;
+  final IconData? leadingIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +119,7 @@ class _FilterChip extends StatelessWidget {
         height: 32.h,
         padding: EdgeInsets.symmetric(horizontal: 14.w),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.primary : AppColors.surface,
+          color: isActive ? ChatFilterBar._activeGreen : AppColors.surface,
           borderRadius: BorderRadius.circular(999.r),
           boxShadow: [
             BoxShadow(
@@ -124,6 +132,14 @@ class _FilterChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (leadingIcon != null) ...[
+              Icon(
+                leadingIcon,
+                size: 14.sp,
+                color: isActive ? Colors.white : AppColors.accentGreen,
+              ),
+              SizedBox(width: 6.w),
+            ],
             Text(
               label,
               style: AppTextStyles.label(fontSize: 13.sp).copyWith(
@@ -147,7 +163,7 @@ class _FilterChip extends StatelessWidget {
                   badge!,
                   style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
                     fontWeight: FontWeight.w700,
-                    color: isActive ? Colors.white : AppColors.primary,
+                    color: isActive ? Colors.white : ChatFilterBar._activeGreen,
                     height: 1,
                   ),
                 ),

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -109,7 +110,7 @@ class ChatSwapStatusCard extends StatelessWidget {
                   child: _SwapSideRow(
                     label: ChatStrings.youOffer,
                     title: ChatStrings.yourKeyboard,
-                    imageColor: const Color(0xFF5C6BC0),
+                    imageUrl: ChatStrings.youOfferImageUrl,
                     thumbWash: _thumbWash,
                     mirror: false,
                   ),
@@ -138,7 +139,7 @@ class ChatSwapStatusCard extends StatelessWidget {
                   child: _SwapSideRow(
                     label: ChatStrings.partnerName,
                     title: ChatStrings.partnerItem,
-                    imageColor: const Color(0xFF37474F),
+                    imageUrl: ChatStrings.partnerItemImageUrl,
                     thumbWash: _thumbWash,
                     mirror: true,
                   ),
@@ -156,20 +157,20 @@ class _SwapSideRow extends StatelessWidget {
   const _SwapSideRow({
     required this.label,
     required this.title,
-    required this.imageColor,
+    required this.imageUrl,
     required this.thumbWash,
     required this.mirror,
   });
 
   final String label;
   final String title;
-  final Color imageColor;
+  final String imageUrl;
   final Color thumbWash;
   final bool mirror;
 
   @override
   Widget build(BuildContext context) {
-    final thumb = _ItemThumb(color: imageColor, wash: thumbWash);
+    final thumb = _ItemThumb(imageUrl: imageUrl, wash: thumbWash);
     final copy = Expanded(
       child: Column(
         crossAxisAlignment:
@@ -206,34 +207,39 @@ class _SwapSideRow extends StatelessWidget {
 }
 
 class _ItemThumb extends StatelessWidget {
-  const _ItemThumb({required this.color, required this.wash});
+  const _ItemThumb({required this.imageUrl, required this.wash});
 
-  final Color color;
+  final String imageUrl;
   final Color wash;
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8.r),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: wash,
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color.lerp(wash, color, 0.35)!,
-              Color.lerp(color, Colors.black, 0.12)!,
-            ],
-          ),
-        ),
-        child: SizedBox(
+      child: ColoredBox(
+        color: wash,
+        child: CachedNetworkImage(
+          imageUrl: imageUrl,
           width: 48.w,
           height: 48.w,
-          child: Icon(
-            Icons.photo_outlined,
-            size: 22.sp,
-            color: Colors.white.withValues(alpha: 0.5),
+          fit: BoxFit.cover,
+          placeholder: (context, url) => SizedBox(
+            width: 48.w,
+            height: 48.w,
+            child: Icon(
+              Icons.image_outlined,
+              size: 22.sp,
+              color: AppColors.textMuted.withValues(alpha: 0.45),
+            ),
+          ),
+          errorWidget: (context, url, error) => SizedBox(
+            width: 48.w,
+            height: 48.w,
+            child: Icon(
+              Icons.image_outlined,
+              size: 22.sp,
+              color: AppColors.textMuted.withValues(alpha: 0.45),
+            ),
           ),
         ),
       ),

@@ -27,10 +27,12 @@ class MyMatchesScreen extends ConsumerWidget {
           children: [
             HomeTopBar(
               title: MatchStrings.myMatches,
+              darkBrandMark: true,
+              darkProfileAvatar: true,
               onProfileTap: () => context.push(AppRouter.profile),
               onNotificationTap: () => context.push(AppRouter.notifications),
             ),
-            SizedBox(height: 14.h),
+            SizedBox(height: 16.h),
             MatchSummaryBanner(
               onRecalculate: () {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -38,7 +40,7 @@ class MyMatchesScreen extends ConsumerWidget {
                 );
               },
             ),
-            SizedBox(height: 14.h),
+            SizedBox(height: 16.h),
             MatchFilterChips(
               selectedIndex: filter,
               onSelected: (i) => ref.read(matchFilterProvider.notifier).state = i,

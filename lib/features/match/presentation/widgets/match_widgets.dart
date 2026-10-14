@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -11,46 +12,117 @@ class MatchSummaryBanner extends StatelessWidget {
 
   final VoidCallback? onRecalculate;
 
+  static const _bannerBg = Color(0xFFCAEAD6);
+  static const _bodyColor = Color(0xFF314D3E);
+
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.mintGlow.withValues(alpha: 0.7),
-            AppColors.accentLime.withValues(alpha: 0.25),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.accentLime.withValues(alpha: 0.4)),
+        color: _bannerBg,
+        borderRadius: BorderRadius.circular(12.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 2,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton.icon(
-              onPressed: onRecalculate,
-              icon: Icon(Icons.sync, size: 16.sp, color: AppColors.primary),
-              label: Text(
-                MatchStrings.recalculate,
-                style: AppTextStyles.caption(fontSize: 11.sp).copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
-                ),
+          Positioned(
+            right: -16.w,
+            top: -24.h,
+            child: Container(
+              width: 112.w,
+              height: 112.w,
+              decoration: BoxDecoration(
+                color: AppColors.accentLime.withValues(alpha: 0.3),
+                shape: BoxShape.circle,
               ),
             ),
           ),
-          Text(
-            MatchStrings.weFoundMatches,
-            style: AppTextStyles.screenTitle(fontSize: 18.sp),
-          ),
-          SizedBox(height: 4.h),
-          Text(
-            MatchStrings.matchBannerSub,
-            style: AppTextStyles.subtitle(fontSize: 13.sp),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 36.w,
+                height: 36.w,
+                decoration: BoxDecoration(
+                  color: AppColors.accentLime,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 2,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: Icon(Icons.auto_awesome, size: 18.sp, color: AppColors.primaryDark),
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            MatchStrings.weFoundMatches,
+                            style: AppTextStyles.label(fontSize: 18.sp).copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primaryDark,
+                              letterSpacing: -0.45,
+                              height: 1.33,
+                            ),
+                          ),
+                        ),
+                        Material(
+                          color: Colors.white.withValues(alpha: 0.8),
+                          borderRadius: BorderRadius.circular(999.r),
+                          child: InkWell(
+                            onTap: onRecalculate,
+                            borderRadius: BorderRadius.circular(999.r),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.sync, size: 12.sp, color: AppColors.primaryDark),
+                                  SizedBox(width: 4.w),
+                                  Text(
+                                    MatchStrings.recalculate,
+                                    style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.primaryDark,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      MatchStrings.matchBannerSub,
+                      style: AppTextStyles.subtitle(fontSize: 14.sp).copyWith(
+                        height: 1.62,
+                        color: _bodyColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -76,16 +148,17 @@ class MatchFilterChips extends StatelessWidget {
 
   static const _icons = [
     Icons.bolt,
-    Icons.place_outlined,
-    Icons.schedule,
+    Icons.near_me_outlined,
+    Icons.schedule_outlined,
   ];
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 36.h,
+      height: 34.h,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.zero,
         itemCount: _labels.length,
         separatorBuilder: (_, _) => SizedBox(width: 8.w),
         itemBuilder: (context, index) {
@@ -93,27 +166,24 @@ class MatchFilterChips extends StatelessWidget {
           return GestureDetector(
             onTap: () => onSelected(index),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
               decoration: BoxDecoration(
-                color: active ? AppColors.primaryDark : AppColors.surface,
+                color: active ? AppColors.primaryDark : AppColors.infoBackground,
                 borderRadius: BorderRadius.circular(999.r),
-                border: Border.all(
-                  color: active ? AppColors.primaryDark : AppColors.borderLight,
-                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
                     _icons[index],
-                    size: 14.sp,
-                    color: active ? Colors.white : AppColors.textMuted,
+                    size: 12.sp,
+                    color: active ? Colors.white : AppColors.textSecondary,
                   ),
-                  SizedBox(width: 6.w),
+                  SizedBox(width: 4.w),
                   Text(
                     _labels[index],
                     style: AppTextStyles.caption(fontSize: 11.sp).copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                       color: active ? Colors.white : AppColors.textSecondary,
                     ),
                   ),
@@ -143,20 +213,17 @@ class MatchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theyOffers = '${match.partnerName.split(' ').first.toUpperCase()} OFFERS';
-
     return Container(
-      margin: EdgeInsets.only(bottom: 14.h),
-      padding: EdgeInsets.all(14.w),
+      margin: EdgeInsets.only(bottom: 16.h),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.borderLight),
+        borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 2,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
@@ -165,10 +232,35 @@ class MatchCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 18.r,
-                backgroundColor: AppColors.infoBackground,
-                child: Text(match.partnerName.substring(0, 1)),
+              ClipOval(
+                child: SizedBox(
+                  width: 40.w,
+                  height: 40.w,
+                  child: match.avatarUrl != null
+                      ? CachedNetworkImage(
+                          imageUrl: match.avatarUrl!,
+                          fit: BoxFit.cover,
+                          placeholder: (_, _) => const ColoredBox(color: AppColors.borderLight),
+                          errorWidget: (_, _, _) => ColoredBox(
+                            color: AppColors.borderLight,
+                            child: Center(
+                              child: Text(
+                                match.partnerName.substring(0, 1),
+                                style: AppTextStyles.label(fontSize: 16.sp),
+                              ),
+                            ),
+                          ),
+                        )
+                      : ColoredBox(
+                          color: AppColors.borderLight,
+                          child: Center(
+                            child: Text(
+                              match.partnerName.substring(0, 1),
+                              style: AppTextStyles.label(fontSize: 16.sp),
+                            ),
+                          ),
+                        ),
+                ),
               ),
               SizedBox(width: 10.w),
               Expanded(
@@ -177,59 +269,67 @@ class MatchCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text(match.partnerName, style: AppTextStyles.label(fontSize: 14.sp)),
+                        Text(
+                          match.partnerName,
+                          style: AppTextStyles.label(fontSize: 14.sp).copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                         if (match.isPro) ...[
                           SizedBox(width: 6.w),
                           _proBadge(),
                         ],
                       ],
                     ),
-                    Text(match.activeLabel, style: AppTextStyles.caption(fontSize: 11.sp)),
+                    if (!match.isPro && match.activeLabel.isNotEmpty)
+                      Text(
+                        match.activeLabel,
+                        style: AppTextStyles.caption(fontSize: 11.sp).copyWith(
+                          color: AppColors.textMuted,
+                        ),
+                      ),
                   ],
                 ),
               ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                decoration: BoxDecoration(
-                  color: AppColors.accentLime,
-                  borderRadius: BorderRadius.circular(999.r),
-                ),
-                child: Text(
-                  '${match.matchPercent}% Match',
-                  style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.primaryDark,
+              _MatchPercentBadge(percent: match.matchPercent, high: match.isHighMatch),
+            ],
+          ),
+          SizedBox(height: 16.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(8.w),
+            decoration: BoxDecoration(
+              color: AppColors.infoBackground,
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: _OfferColumn(label: MatchStrings.youOffer, title: match.youOfferTitle, imageUrl: match.youImageUrl, fallback: match.youColor)),
+                Padding(
+                  padding: EdgeInsets.only(top: 48.h),
+                  child: Container(
+                    width: 32.w,
+                    height: 32.w,
+                    decoration: const BoxDecoration(
+                      color: AppColors.accentLime,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.swap_horiz, size: 18.sp, color: AppColors.primaryDark),
                   ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12.h),
-          Row(
-            children: [
-              Expanded(
-                child: _miniItem(
-                  MatchStrings.youOffer,
-                  match.youOfferTitle,
-                  match.youColor,
+                Expanded(
+                  child: _OfferColumn(
+                    label: match.theyOffersLabel,
+                    title: match.theyOfferTitle,
+                    imageUrl: match.theyImageUrl,
+                    fallback: match.theyColor,
+                  ),
                 ),
-              ),
-              Container(
-                width: 32.w,
-                height: 32.w,
-                margin: EdgeInsets.symmetric(horizontal: 4.w),
-                decoration: const BoxDecoration(
-                  color: AppColors.accentLime,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Icons.swap_horiz, size: 18.sp, color: AppColors.primaryDark),
-              ),
-              Expanded(
-                child: _miniItem(theyOffers, match.theyOfferTitle, match.theyColor),
-              ),
-            ],
+              ],
+            ),
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: 16.h),
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(10.w),
@@ -240,51 +340,70 @@ class MatchCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.check_circle, size: 18.sp, color: AppColors.accentGreen),
+                Icon(match.reasonIcon, size: 16.sp, color: AppColors.accentGreen),
                 SizedBox(width: 8.w),
                 Expanded(
                   child: Text(
                     match.reason,
-                    style: AppTextStyles.caption(fontSize: 12.sp).copyWith(height: 1.3),
+                    style: AppTextStyles.caption(fontSize: 12.sp).copyWith(
+                      height: 1.35,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: 16.h),
           Row(
             children: [
               Expanded(
                 flex: 2,
-                child: FilledButton.icon(
-                  onPressed: onPropose,
-                  icon: Icon(Icons.arrow_forward, size: 18.sp),
-                  label: Text(MatchStrings.proposesSwap),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    minimumSize: Size(0, 44.h),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+                child: Material(
+                  color: AppColors.primaryDark,
+                  borderRadius: BorderRadius.circular(8.r),
+                  child: InkWell(
+                    onTap: onPropose,
+                    borderRadius: BorderRadius.circular(8.r),
+                    child: SizedBox(
+                      height: 44.h,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            MatchStrings.proposesSwap,
+                            style: AppTextStyles.label(fontSize: 13.sp).copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(width: 4.w),
+                          Icon(Icons.arrow_forward, size: 14.sp, color: Colors.white),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
               SizedBox(width: 8.w),
               Expanded(
-                child: OutlinedButton(
-                  onPressed: onSecondary ?? onDetails,
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: Size(0, 44.h),
-                    backgroundColor: AppColors.infoBackground,
-                    side: const BorderSide(color: AppColors.infoBorder),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                  ),
-                  child: Text(
-                    match.secondaryAction,
-                    style: AppTextStyles.caption(fontSize: 12.sp).copyWith(
-                      fontWeight: FontWeight.w700,
+                child: Material(
+                  color: AppColors.borderLight,
+                  borderRadius: BorderRadius.circular(8.r),
+                  child: InkWell(
+                    onTap: onSecondary ?? onDetails,
+                    borderRadius: BorderRadius.circular(8.r),
+                    child: SizedBox(
+                      height: 44.h,
+                      child: Center(
+                        child: Text(
+                          match.secondaryAction,
+                          style: AppTextStyles.caption(fontSize: 12.sp).copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primaryDark,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -305,24 +424,109 @@ class MatchCard extends StatelessWidget {
       ),
       child: Text(
         MatchStrings.pro,
-        style: AppTextStyles.caption(fontSize: 9.sp).copyWith(fontWeight: FontWeight.w800),
+        style: AppTextStyles.caption(fontSize: 9.sp).copyWith(
+          fontWeight: FontWeight.w800,
+          color: AppColors.primaryDark,
+        ),
       ),
     );
   }
+}
 
-  Widget _miniItem(String label, String title, Color color) {
+class _MatchPercentBadge extends StatelessWidget {
+  const _MatchPercentBadge({required this.percent, required this.high});
+
+  final int percent;
+  final bool high;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: high ? AppColors.accentLime : const Color(0xFFDEE9FC),
+        borderRadius: BorderRadius.circular(999.r),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (high) ...[
+            Icon(Icons.bolt, size: 10.sp, color: AppColors.primaryDark),
+            SizedBox(width: 4.w),
+          ],
+          Text(
+            '$percent% Match',
+            style: AppTextStyles.caption(fontSize: 11.sp).copyWith(
+              fontWeight: FontWeight.w700,
+              color: high ? AppColors.primaryDark : AppColors.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+Widget _offerImageFallback(Color fallback) {
+  return ColoredBox(
+    color: fallback,
+    child: Center(
+      child: Icon(Icons.image_outlined, size: 28.sp, color: AppColors.textMuted),
+    ),
+  );
+}
+
+class _OfferColumn extends StatelessWidget {
+  const _OfferColumn({
+    required this.label,
+    required this.title,
+    this.imageUrl,
+    required this.fallback,
+  });
+
+  final String label;
+  final String title;
+  final String? imageUrl;
+  final Color fallback;
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Text(
           label,
-          style: AppTextStyles.caption(fontSize: 9.sp).copyWith(fontWeight: FontWeight.w700),
+          style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.5,
+            color: AppColors.textSecondary,
+          ),
         ),
         SizedBox(height: 4.h),
         ClipRRect(
           borderRadius: BorderRadius.circular(8.r),
-          child: ColoredBox(
-            color: color,
-            child: SizedBox(width: 56.w, height: 56.w),
+          child: SizedBox(
+            width: double.infinity,
+            height: 120.h,
+            child: imageUrl != null && imageUrl!.isNotEmpty
+                ? CachedNetworkImage(
+                    imageUrl: imageUrl!,
+                    fit: BoxFit.cover,
+                    placeholder: (_, _) => ColoredBox(
+                      color: fallback,
+                      child: Center(
+                        child: SizedBox(
+                          width: 22.w,
+                          height: 22.w,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.accentGreen.withValues(alpha: 0.6),
+                          ),
+                        ),
+                      ),
+                    ),
+                    errorWidget: (_, _, _) => _offerImageFallback(fallback),
+                  )
+                : _offerImageFallback(fallback),
           ),
         ),
         SizedBox(height: 4.h),
@@ -331,7 +535,9 @@ class MatchCard extends StatelessWidget {
           textAlign: TextAlign.center,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.caption(fontSize: 10.sp),
+          style: AppTextStyles.caption(fontSize: 11.sp).copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ],
     );

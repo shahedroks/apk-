@@ -5,9 +5,11 @@ import '../../../../core/constants/app_colors.dart';
 
 /// Lime SWAP IT mark used in the home header and Discover tab.
 class SwapBrandMark extends StatelessWidget {
-  const SwapBrandMark({super.key, this.size});
+  const SwapBrandMark({super.key, this.size, this.dark = false});
 
   final double? size;
+  /// Chats header: dark green tile with light swap icon.
+  final bool dark;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +18,7 @@ class SwapBrandMark extends StatelessWidget {
       width: box,
       height: box,
       decoration: BoxDecoration(
-        color: AppColors.accentLime,
+        color: dark ? const Color(0xFF0A2E22) : AppColors.accentLime,
         borderRadius: BorderRadius.circular(10.r),
         boxShadow: [
           BoxShadow(
@@ -30,7 +32,7 @@ class SwapBrandMark extends StatelessWidget {
       child: Icon(
         Icons.swap_horiz_rounded,
         size: (box * 0.58),
-        color: AppColors.primaryDark,
+        color: dark ? Colors.white : AppColors.primaryDark,
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -38,16 +39,21 @@ class IncomingChatBubble extends StatelessWidget {
     required this.text,
     required this.time,
     this.showAvatar = true,
+    this.avatarUrl,
   });
 
   final String text;
   final String time;
   final bool showAvatar;
+  final String? avatarUrl;
 
   static const Color _bubbleFill = Color(0xFFEFF4FF);
+  static const Color _avatarRing = Color(0xFFDEE9FC);
 
   @override
   Widget build(BuildContext context) {
+    final photoUrl = avatarUrl ?? ChatStrings.partnerAvatarUrl;
+
     return Padding(
       padding: EdgeInsets.only(bottom: 16.h),
       child: Row(
@@ -56,17 +62,30 @@ class IncomingChatBubble extends StatelessWidget {
           if (showAvatar)
             Padding(
               padding: EdgeInsets.only(right: 4.w, bottom: 4.h),
-              child: Container(
-                width: 28.w,
-                height: 28.w,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFDEE9FC),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.person_rounded,
-                  size: 16.sp,
-                  color: AppColors.primary.withValues(alpha: 0.4),
+              child: ClipOval(
+                child: SizedBox(
+                  width: 28.w,
+                  height: 28.w,
+                  child: CachedNetworkImage(
+                    imageUrl: photoUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => ColoredBox(
+                      color: _avatarRing,
+                      child: Icon(
+                        Icons.person_rounded,
+                        size: 16.sp,
+                        color: AppColors.primary.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => ColoredBox(
+                      color: _avatarRing,
+                      child: Icon(
+                        Icons.person_rounded,
+                        size: 16.sp,
+                        color: AppColors.primary.withValues(alpha: 0.4),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             )
@@ -198,6 +217,7 @@ class OutgoingChatBubble extends StatelessWidget {
                           Icons.done_all_rounded,
                           size: 13.sp,
                           color: AppColors.accentLime,
+                          weight: 700,
                         ),
                       ],
                     ],
@@ -355,7 +375,7 @@ class ChatQuickReplyBar extends StatelessWidget {
                 style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.primaryDark,
-                  height: 1,
+                  height: 1.2,
                 ),
               ),
             ),
@@ -389,18 +409,18 @@ class ChatComposerBar extends StatelessWidget {
         child: Row(
           children: [
             Material(
-              color: AppColors.surface,
-              shape: const CircleBorder(),
+              color: AppColors.toggleTrack,
+              borderRadius: BorderRadius.circular(12.r),
               child: InkWell(
                 onTap: () {},
-                customBorder: const CircleBorder(),
+                borderRadius: BorderRadius.circular(12.r),
                 child: SizedBox(
                   width: 40.w,
                   height: 40.w,
                   child: Icon(
-                    Icons.photo_camera_outlined,
+                    Icons.add_a_photo_outlined,
                     size: 20.sp,
-                    color: AppColors.textPrimary,
+                    color: AppColors.primaryDark,
                   ),
                 ),
               ),
@@ -409,7 +429,7 @@ class ChatComposerBar extends StatelessWidget {
             Expanded(
               child: Container(
                 height: 44.h,
-                padding: EdgeInsets.only(left: 14.w, right: 8.w),
+                padding: EdgeInsets.symmetric(horizontal: 14.w),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(999.r),
@@ -421,29 +441,18 @@ class ChatComposerBar extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: controller,
-                        style: AppTextStyles.subtitle(fontSize: 14.sp),
-                        decoration: InputDecoration(
-                          hintText: ChatStrings.messageHint,
-                          hintStyle: AppTextStyles.subtitle(fontSize: 14.sp).copyWith(
-                            color: AppColors.textMuted,
-                          ),
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                      ),
-                    ),
-                    Icon(
-                      Icons.mic_none_rounded,
-                      size: 22.sp,
+                child: TextField(
+                  controller: controller,
+                  style: AppTextStyles.subtitle(fontSize: 14.sp),
+                  decoration: InputDecoration(
+                    hintText: ChatStrings.messageHint,
+                    hintStyle: AppTextStyles.subtitle(fontSize: 14.sp).copyWith(
                       color: AppColors.textMuted,
                     ),
-                  ],
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
                 ),
               ),
             ),

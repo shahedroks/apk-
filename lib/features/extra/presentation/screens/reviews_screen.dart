@@ -5,9 +5,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/extra_strings.dart';
+import '../../../../core/constants/profile_strings.dart';
 import '../../../../core/routes/app_router.dart';
-import '../../../../core/utils/mock_actions.dart';
 import '../../../../core/theme/text_styles.dart';
+import '../../../../core/utils/mock_actions.dart';
+import '../../../profile/presentation/widgets/profile_widgets.dart';
 import '../../data/extra_mock_data.dart';
 import '../providers/extra_ui_provider.dart';
 import '../widgets/extra_widgets.dart';
@@ -21,93 +23,117 @@ class ReviewsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 18.sp),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(ExtraStrings.reviewsTitle, style: AppTextStyles.screenTitle(fontSize: 17.sp)),
-        actions: [
-          IconButton(
-            onPressed: () => showMockSnackBar(context, 'Reviews menu (mock)'),
-            icon: const Icon(Icons.more_vert),
-          ),
-          IconButton(
-            onPressed: () => context.push(AppRouter.profile),
-            icon: const Icon(Icons.person_outline),
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: EdgeInsets.all(16.w),
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(8.w, 4.h, 8.w, 0),
+              child: _ReviewsHeader(
+                onMenu: () => showMockSnackBar(context, 'Reviews menu (mock)'),
+                onProfile: () => context.push(AppRouter.profile),
+                onBack: () => context.pop(),
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 24.h),
                 children: [
-                  Text(ExtraStrings.ratingSummary, style: AppTextStyles.screenTitle(fontSize: 28.sp)),
-                  Row(
-                    children: List.generate(5, (_) => Icon(Icons.star, color: Colors.amber, size: 18.sp)),
+                  const ReviewsSummaryCard(),
+                  SizedBox(height: 8.h),
+                  ReviewFilterChips(
+                    labels: ExtraMockData.reviewFilters,
+                    counts: ExtraMockData.reviewFilterCounts,
+                    selectedIndex: filter,
+                    onSelected: (i) =>
+                        ref.read(reviewFilterProvider.notifier).state = i,
                   ),
-                  Text(ExtraStrings.ratingBased, style: AppTextStyles.caption(fontSize: 11.sp)),
+                  SizedBox(height: 16.h),
+                  ...ExtraMockData.reviews.map((r) => ReviewCard(review: r)),
+                  const ReviewTrustBanner(),
                 ],
               ),
-              const Spacer(),
-              SizedBox(
-                width: 100.w,
-                child: Column(
-                  children: [5, 4, 3, 2, 1].map((star) {
-                    final width = star == 5 ? 1.0 : star == 4 ? 0.15 : 0.05;
-                    return Padding(
-                      padding: EdgeInsets.only(bottom: 4.h),
-                      child: Row(
-                        children: [
-                          Text('$star', style: AppTextStyles.caption(fontSize: 10.sp)),
-                          SizedBox(width: 4.w),
-                          Expanded(
-                            child: LinearProgressIndicator(
-                              value: width,
-                              minHeight: 6.h,
-                              backgroundColor: AppColors.infoBorder,
-                              color: AppColors.accentLime,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ReviewsHeader extends StatelessWidget {
+  const _ReviewsHeader({
+    required this.onBack,
+    required this.onMenu,
+    required this.onProfile,
+  });
+
+  final VoidCallback onBack;
+  final VoidCallback onMenu;
+  final VoidCallback onProfile;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 56.h,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onBack,
+              customBorder: const CircleBorder(),
+              child: SizedBox(
+                width: 44.w,
+                height: 44.w,
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 16.sp,
+                  color: AppColors.textPrimary,
                 ),
               ),
-            ],
-          ),
-          SizedBox(height: 16.h),
-          HorizontalFilterChips(
-            labels: ExtraMockData.reviewFilters,
-            selectedIndex: filter,
-            onSelected: (i) => ref.read(reviewFilterProvider.notifier).state = i,
-          ),
-          SizedBox(height: 16.h),
-          ...ExtraMockData.reviews.map((r) => ReviewCard(review: r)),
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(14.w),
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(12.r),
             ),
-            child: Row(
-              children: [
-                Icon(Icons.shield_outlined, color: AppColors.accentLime),
-                SizedBox(width: 10.w),
-                Text(
-                  ExtraStrings.verifiedTrust,
-                  style: AppTextStyles.label(fontSize: 13.sp).copyWith(color: Colors.white),
+          ),
+          Expanded(
+            child: Text(
+              ExtraStrings.reviewsTitle,
+              style: AppTextStyles.screenTitle(fontSize: 18.sp).copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.primaryDark,
+                letterSpacing: -0.45,
+              ),
+            ),
+          ),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onMenu,
+              customBorder: const CircleBorder(),
+              child: SizedBox(
+                width: 44.w,
+                height: 44.w,
+                child: Icon(Icons.more_vert, size: 22.sp, color: AppColors.textPrimary),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(right: 8.w),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onProfile,
+                customBorder: const CircleBorder(),
+                child: SizedBox(
+                  width: 40.w,
+                  height: 40.w,
+                  child: Center(
+                    child: ProfileAvatar(
+                      radius: 16,
+                      imageUrl: ProfileStrings.profileAvatarUrl,
+                    ),
+                  ),
                 ),
-              ],
+              ),
             ),
           ),
         ],

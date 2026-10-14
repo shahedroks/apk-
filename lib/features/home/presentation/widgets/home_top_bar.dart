@@ -10,6 +10,8 @@ class HomeTopBar extends StatelessWidget {
     super.key,
     required this.title,
     this.showTitle = true,
+    this.darkBrandMark = false,
+    this.darkProfileAvatar = false,
     this.titledTabHeader = false,
     this.showBack = false,
     this.onBack,
@@ -21,6 +23,8 @@ class HomeTopBar extends StatelessWidget {
 
   final String title;
   final bool showTitle;
+  final bool darkBrandMark;
+  final bool darkProfileAvatar;
   /// Back chevron + left title (Saved / Swaps / Chats tabs).
   final bool titledTabHeader;
   final bool showBack;
@@ -60,7 +64,7 @@ class HomeTopBar extends StatelessWidget {
             ),
           ),
         ] else ...[
-          const SwapBrandMark(),
+          SwapBrandMark(dark: darkBrandMark),
           if (showTitle) ...[
             SizedBox(width: 10.w),
             Expanded(
@@ -95,7 +99,9 @@ class HomeTopBar extends StatelessWidget {
             customBorder: const CircleBorder(),
             child: CircleAvatar(
               radius: 18.r,
-              backgroundColor: const Color(0xFF90A4AE),
+              backgroundColor: darkProfileAvatar
+                  ? const Color(0xFF0A2E22)
+                  : const Color(0xFF90A4AE),
               child: Icon(Icons.person, size: 20.sp, color: Colors.white),
             ),
           ),

@@ -26,6 +26,8 @@ class ChatsListScreen extends ConsumerWidget {
       children: [
         HomeTopBar(
           title: HomeStrings.chatsList,
+          darkBrandMark: true,
+          darkProfileAvatar: true,
           onProfileTap: () => context.push(AppRouter.profile),
           onNotificationTap: () => context.push(AppRouter.notifications),
         ),
@@ -33,7 +35,7 @@ class ChatsListScreen extends ConsumerWidget {
         HomeSearchBar(
           hint: HomeStrings.searchConversationsHint,
           showFilterButton: false,
-          useWhiteField: true,
+          discoverStyle: true,
         ),
         SizedBox(height: 8.h),
         ChatFilterBar(

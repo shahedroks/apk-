@@ -13,6 +13,7 @@ class HomeStrings {
   static const String testEmpty = 'Test Empty';
   static const String goodMorning = 'Good morning, Sara';
   static const String readyToSwap = 'Ready to swap today?';
+  static const String myMatches = 'My Matches';
   static const String circularExchange = 'Circular Exchange';
   static const String promoHeadline =
       'Give great items a second life nearby.';
@@ -31,6 +32,7 @@ class HomeStrings {
   static const String completed = 'Completed';
   static const String cancelled = 'Cancelled';
   static const String circularImpact = 'CIRCULAR IMPACT';
+  static const String circularImpactTrades = 'CIRCULAR IMPACT • 8 Trades';
   static const String impactStat = '14.2 kg waste diverted from landfills!';
   static const String youGive = 'You give';
   static const String youGet = 'You get';
@@ -40,7 +42,8 @@ class HomeStrings {
   static const String reviewOffer = 'Review Offer';
   static const String actionNeeded = 'Action Needed';
   static const String swapArchive = 'Swap Archive';
-  static const String archiveSubtitle = '8 completed trades in your history';
+  static const String archiveSubtitle =
+      '8 completed trades • 100% positive feedback';
 
   static const String stepProposed = 'Swap Proposed';
   static const String stepAccepted = 'Offer Accepted';

@@ -4,10 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/routes/app_router.dart';
 import '../../../../core/constants/home_strings.dart';
-import '../../../../core/constants/match_strings.dart';
+import '../../../../core/routes/app_router.dart';
 import '../../../../core/theme/text_styles.dart';
+import '../../../../core/utils/mock_actions.dart';
 import '../../data/home_mock_data.dart';
 import '../providers/home_ui_provider.dart';
 import '../widgets/home_top_bar.dart';
@@ -25,49 +25,20 @@ class MySwapsScreen extends ConsumerWidget {
       children: [
         HomeTopBar(
           title: HomeStrings.mySwaps,
+          showTitle: true,
           showSettings: true,
           onSettings: () => context.push(AppRouter.settings),
           onProfileTap: () => context.push(AppRouter.profile),
           onNotificationTap: () => context.push(AppRouter.notifications),
         ),
         SizedBox(height: 14.h),
-        Material(
-          color: AppColors.mintGlow.withValues(alpha: 0.45),
-          borderRadius: BorderRadius.circular(14.r),
-          child: InkWell(
-            onTap: () => context.push(AppRouter.myMatches),
-            borderRadius: BorderRadius.circular(14.r),
-            child: Padding(
-              padding: EdgeInsets.all(14.w),
-              child: Row(
-                children: [
-                  Icon(Icons.auto_awesome, color: AppColors.primary),
-                  SizedBox(width: 10.w),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(MatchStrings.myMatches, style: AppTextStyles.label(fontSize: 14.sp)),
-                        Text(
-                          MatchStrings.weFoundMatches,
-                          style: AppTextStyles.caption(fontSize: 11.sp),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(Icons.chevron_right, color: AppColors.textMuted),
-                ],
-              ),
-            ),
-          ),
+        _SwapTabs(
+          selected: tab,
+          onSelect: (i) => ref.read(swapsTabProvider.notifier).state = i,
         ),
         SizedBox(height: 14.h),
-        _SwapTabs(selected: tab, onSelect: (i) {
-          ref.read(swapsTabProvider.notifier).state = i;
-        }),
-        SizedBox(height: 16.h),
         const CircularImpactCard(),
-        SizedBox(height: 16.h),
+        SizedBox(height: 14.h),
         if (tab == 0) ...[
           ActiveSwapCard(swap: HomeMockData.primarySwap),
           ActiveSwapCard(swap: HomeMockData.reviewSwap),
@@ -82,35 +53,8 @@ class MySwapsScreen extends ConsumerWidget {
             ),
           ),
         SizedBox(height: 8.h),
-        Container(
-          padding: EdgeInsets.all(14.w),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14.r),
-            border: Border.all(color: AppColors.borderLight),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.archive_outlined, color: AppColors.primary, size: 22.sp),
-              SizedBox(width: 10.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      HomeStrings.swapArchive,
-                      style: AppTextStyles.label(fontSize: 14.sp),
-                    ),
-                    Text(
-                      HomeStrings.archiveSubtitle,
-                      style: AppTextStyles.caption(fontSize: 11.sp),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(Icons.chevron_right, color: AppColors.textMuted),
-            ],
-          ),
+        SwapArchiveTile(
+          onTap: () => showMockSnackBar(context, 'Swap archive (mock)'),
         ),
       ],
     );
@@ -148,6 +92,15 @@ class _SwapTabs extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isActive ? AppColors.primary : Colors.transparent,
                   borderRadius: BorderRadius.circular(10.r),
+                  boxShadow: isActive
+                      ? [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 2,
+                            offset: const Offset(0, 1),
+                          ),
+                        ]
+                      : null,
                 ),
                 child: Text(
                   labels[index],

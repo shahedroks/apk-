@@ -24,10 +24,22 @@ class CategoryChipBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final discover = style == CategoryChipStyle.discover;
 
+    final chipHeight = discover ? 34.h : 30.h;
+    final barHeight = discover ? 42.h : 36.h;
+    final verticalInset = (barHeight - chipHeight) / 2;
+
     return SizedBox(
-      height: discover ? 42.h : 36.h,
+      height: barHeight,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        padding: EdgeInsets.only(
+          right: 8.w,
+          top: verticalInset,
+          bottom: verticalInset,
+        ),
         itemCount: labels.length,
         separatorBuilder: (_, _) => SizedBox(width: discover ? 4.w : 8.w),
         itemBuilder: (context, index) {
@@ -38,10 +50,11 @@ class CategoryChipBar extends StatelessWidget {
           return GestureDetector(
             onTap: () => onSelected(index),
             child: Container(
+              height: chipHeight,
               padding: EdgeInsets.symmetric(
                 horizontal: discover ? 16.w : 14.w,
-                vertical: discover ? 8.h : 8.h,
               ),
+              alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: isActive
                     ? activeColor
@@ -68,6 +81,7 @@ class CategoryChipBar extends StatelessWidget {
                     .copyWith(
                   color: isActive ? Colors.white : AppColors.textSecondary,
                   fontWeight: FontWeight.w600,
+                  height: discover ? 18 / 13 : null,
                 ),
               ),
             ),

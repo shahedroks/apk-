@@ -8,8 +8,6 @@ import '../../../../core/constants/home_strings.dart';
 import '../../../../core/routes/app_router.dart';
 import '../../../../core/theme/text_styles.dart';
 import '../providers/home_ui_provider.dart';
-import 'swap_brand_mark.dart';
-
 class HomeBottomNav extends ConsumerWidget {
   const HomeBottomNav({super.key});
 
@@ -44,7 +42,10 @@ class HomeBottomNav extends ConsumerWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _DiscoverNavItem(
+              _NavItem(
+                icon: Icons.home_outlined,
+                activeIcon: Icons.home_rounded,
+                label: HomeStrings.navDiscover,
                 selected: !onProfileRoute && index == 0,
                 onTap: () => _goToTab(context, ref, 0),
               ),
@@ -74,41 +75,6 @@ class HomeBottomNav extends ConsumerWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _DiscoverNavItem extends StatelessWidget {
-  const _DiscoverNavItem({required this.selected, required this.onTap});
-
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = selected ? AppColors.primary : AppColors.textMuted;
-    return InkWell(
-      onTap: onTap,
-      child: SizedBox(
-        width: 64.w,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (selected)
-              SwapBrandMark(size: 26.w)
-            else
-              Icon(Icons.explore_outlined, size: 22.sp, color: color),
-            SizedBox(height: 2.h),
-            Text(
-              HomeStrings.navDiscover,
-              style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
-                color: color,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -164,26 +130,91 @@ class _FabNavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Transform.translate(
-      offset: Offset(0, -10.h),
+      offset: Offset(0, -20.h),
       child: Material(
-        color: AppColors.accentLime,
-        elevation: 6,
-        shadowColor: AppColors.primary.withValues(alpha: 0.25),
-        shape: const CircleBorder(),
+        color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
           customBorder: const CircleBorder(),
-          child: SizedBox(
-            width: 52.w,
-            height: 52.w,
-            child: Icon(
-              Icons.add,
-              size: 28.sp,
-              color: AppColors.primaryDark,
+          child: Container(
+            width: 56.w,
+            height: 56.w,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.accentLime,
+              border: Border.all(color: AppColors.surface, width: 4.w),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.18),
+                  blurRadius: 32,
+                  offset: const Offset(0, 12),
+                  spreadRadius: -4,
+                ),
+                BoxShadow(
+                  color: const Color(0xFF84CC16).withValues(alpha: 0.25),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                  spreadRadius: -2,
+                ),
+              ],
             ),
+            alignment: Alignment.center,
+            child: _BoldPlusIcon(size: 20.w, strokeWidth: 3.2.w),
           ),
         ),
       ),
     );
   }
+}
+
+/// Thick-stroke plus matching the docked FAB in `doc/home.md`.
+class _BoldPlusIcon extends StatelessWidget {
+  const _BoldPlusIcon({required this.size, required this.strokeWidth});
+
+  final double size;
+  final double strokeWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: Size.square(size),
+      painter: _BoldPlusPainter(
+        color: AppColors.primaryDark,
+        strokeWidth: strokeWidth,
+      ),
+    );
+  }
+}
+
+class _BoldPlusPainter extends CustomPainter {
+  _BoldPlusPainter({required this.color, required this.strokeWidth});
+
+  final Color color;
+  final double strokeWidth;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+
+    final center = size.center(Offset.zero);
+    final arm = size.shortestSide * 0.34;
+
+    canvas.drawLine(
+      Offset(center.dx - arm, center.dy),
+      Offset(center.dx + arm, center.dy),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(center.dx, center.dy - arm),
+      Offset(center.dx, center.dy + arm),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _BoldPlusPainter oldDelegate) =>
+      oldDelegate.color != color || oldDelegate.strokeWidth != strokeWidth;
 }

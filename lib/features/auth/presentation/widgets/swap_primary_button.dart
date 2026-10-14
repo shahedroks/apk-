@@ -49,17 +49,16 @@ class SwapPrimaryButton extends StatelessWidget {
                 ),
               )
             : icon != null && iconAtEnd
-                ? Stack(
-                    alignment: Alignment.center,
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         label,
                         style: AppTextStyles.button(fontSize: 15.sp),
                       ),
-                      Positioned(
-                        right: 20.w,
-                        child: Icon(icon, size: 20.sp, color: Colors.white),
-                      ),
+                      SizedBox(width: 4.w),
+                      Icon(icon, size: 18.sp, color: Colors.white),
                     ],
                   )
                 : Row(

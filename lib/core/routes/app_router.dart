@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../constants/chat_strings.dart';
+import '../constants/extra_strings.dart';
+import '../constants/home_strings.dart';
+import '../constants/item_strings.dart';
+import '../constants/profile_strings.dart';
+import '../constants/subscription_strings.dart';
+import '../storage/auth_session.dart';
+import 'screen_gate.dart';
 import '../../features/auth/presentation/screens/check_email_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
@@ -12,12 +20,14 @@ import '../../features/item/presentation/screens/add_item_success_screen.dart';
 import '../../features/item/presentation/screens/item_detail_screen.dart';
 import '../../features/item/presentation/screens/my_items_screen.dart';
 import '../../features/item/presentation/screens/propose_swap_screen.dart';
+import '../../features/item/presentation/screens/swap_invitation_sent_screen.dart';
 import '../../features/extra/presentation/screens/notifications_screen.dart';
 import '../../features/extra/presentation/screens/public_profile_screen.dart';
 import '../../features/extra/presentation/screens/reviews_screen.dart';
 import '../../features/extra/presentation/screens/swap_completed_screen.dart';
 import '../../features/match/presentation/screens/match_detail_screen.dart';
 import '../../features/match/presentation/screens/my_matches_screen.dart';
+import '../../features/profile/presentation/screens/incoming_swap_list_screen.dart';
 import '../../features/profile/presentation/screens/incoming_swap_offer_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
@@ -37,10 +47,17 @@ class AppRouter {
   static const String home = '/home';
   static const String profile = '/profile';
   static const String settings = '/settings';
-  static const String incomingSwapOffer = '/incoming-swap-offer';
+  static const String incomingSwapOffers = '/incoming-swap-offers';
+
+  static String incomingSwapOffer(String offerId, {bool reviewTitle = false}) {
+    final path = '/incoming-swap-offers/$offerId';
+    if (reviewTitle) return '$path?title=review';
+    return path;
+  }
   static const String chatConversation = '/chat/:threadId';
   static const String itemDetail = '/item/:itemId';
   static const String proposeSwap = '/propose-swap';
+  static const String swapInvitationSent = '/propose-swap/sent';
   static const String addItem = '/add-item';
   static const String addItemSuccess = '/add-item/success';
   static const String myItems = '/my-items';
@@ -77,10 +94,12 @@ class AppRouter {
         home,
         profile,
         settings,
-        incomingSwapOffer,
+        incomingSwapOffers,
+        incomingSwapOffer('1'),
         chat('c1', name: 'Marcus Chen'),
         item('4'),
         '$proposeSwap?itemId=4',
+        '$swapInvitationSent?offerIndex=0',
         addItem,
         addItemSuccess,
         myItems,
@@ -97,9 +116,39 @@ class AppRouter {
         mySubscription,
       ];
 
-  static final GoRouter router = GoRouter(
-    initialLocation: login,
-    routes: <RouteBase>[
+  static bool _isPublicAuthRoute(String path) {
+    return path == login ||
+        path == register ||
+        path == forgotPassword ||
+        path == checkEmail;
+  }
+
+  static String? _authRedirect(BuildContext context, GoRouterState state) {
+    final path = state.uri.path;
+    final loggedIn = AuthSession.isLoggedIn;
+
+    if (loggedIn) {
+      if (path == login || path == register) return home;
+      return null;
+    }
+
+    if (!_isPublicAuthRoute(path)) {
+      return login;
+    }
+    return null;
+  }
+
+  static GoRouter createRouter() {
+    return GoRouter(
+      initialLocation: AuthSession.isLoggedIn ? home : login,
+      redirect: _authRedirect,
+      routes: _routes,
+      errorBuilder: (BuildContext context, GoRouterState state) =>
+          const LoginScreen(),
+    );
+  }
+
+  static final List<RouteBase> _routes = <RouteBase>[
       GoRoute(
         path: login,
         builder: (BuildContext context, GoRouterState state) =>
@@ -138,16 +187,40 @@ class AppRouter {
             const SettingsScreen(),
       ),
       GoRoute(
-        path: incomingSwapOffer,
+        path: incomingSwapOffers,
         builder: (BuildContext context, GoRouterState state) =>
-            const IncomingSwapOfferScreen(),
+            gatedDesignBoardScreen(
+              title: ProfileStrings.incomingSwapOffersListTitle,
+              builder: () => const IncomingSwapListScreen(),
+            ),
+        routes: [
+          GoRoute(
+            path: ':offerId',
+            builder: (BuildContext context, GoRouterState state) {
+              final reviewTitle =
+                  state.uri.queryParameters['title'] == 'review';
+              return gatedDesignBoardScreen(
+                title: reviewTitle
+                    ? HomeStrings.reviewOffer
+                    : ProfileStrings.incomingSwapOffer,
+                builder: () => IncomingSwapOfferScreen(
+                  offerId: state.pathParameters['offerId'],
+                  useReviewTitle: reviewTitle,
+                ),
+              );
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: '/chat/:threadId',
         builder: (BuildContext context, GoRouterState state) {
-          return ChatConversationScreen(
-            threadId: state.pathParameters['threadId'],
-            partnerName: state.uri.queryParameters['name'],
+          return gatedDesignBoardScreen(
+            title: ChatStrings.chatConversation,
+            builder: () => ChatConversationScreen(
+              threadId: state.pathParameters['threadId'],
+              partnerName: state.uri.queryParameters['name'],
+            ),
           );
         },
       ),
@@ -159,9 +232,24 @@ class AppRouter {
       ),
       GoRoute(
         path: proposeSwap,
-        builder: (BuildContext context, GoRouterState state) => ProposeSwapScreen(
-          itemId: state.uri.queryParameters['itemId'],
-        ),
+        builder: (BuildContext context, GoRouterState state) =>
+            gatedDesignBoardScreen(
+              title: HomeStrings.proposeSwap,
+              builder: () => ProposeSwapScreen(
+                itemId: state.uri.queryParameters['itemId'],
+              ),
+            ),
+      ),
+      GoRoute(
+        path: swapInvitationSent,
+        builder: (BuildContext context, GoRouterState state) {
+          final raw = state.uri.queryParameters['offerIndex'];
+          final offerIndex = int.tryParse(raw ?? '') ?? 0;
+          return gatedDesignBoardScreen(
+            title: ItemStrings.inviteSuccessTitle,
+            builder: () => SwapInvitationSentScreen(offerIndex: offerIndex),
+          );
+        },
       ),
       GoRoute(
         path: addItem,
@@ -194,42 +282,70 @@ class AppRouter {
       GoRoute(
         path: swapCompleted,
         builder: (BuildContext context, GoRouterState state) =>
-            const SwapCompletedScreen(),
+            gatedDesignBoardScreen(
+              title: ExtraStrings.swapCompleted,
+              builder: () => const SwapCompletedScreen(),
+            ),
       ),
       GoRoute(
         path: reviews,
-        builder: (BuildContext context, GoRouterState state) => const ReviewsScreen(),
+        builder: (BuildContext context, GoRouterState state) =>
+            gatedDesignBoardScreen(
+              title: ExtraStrings.reviewsTitle,
+              builder: () => const ReviewsScreen(),
+            ),
       ),
       GoRoute(
         path: '/user/:username',
-        builder: (BuildContext context, GoRouterState state) => PublicProfileScreen(
-          username: state.pathParameters['username'],
-        ),
+        builder: (BuildContext context, GoRouterState state) =>
+            gatedDesignBoardScreen(
+              title: ExtraStrings.publicProfileTitle,
+              builder: () => PublicProfileScreen(
+                username: state.pathParameters['username'],
+              ),
+            ),
       ),
       GoRoute(
         path: subscriptionUpgrade,
         builder: (BuildContext context, GoRouterState state) =>
-            const SubscriptionUpgradeScreen(),
+            gatedDesignBoardScreen(
+              title: SubscriptionStrings.subscriptionUpgradeTitle,
+              builder: () => const SubscriptionUpgradeScreen(),
+            ),
       ),
       GoRoute(
         path: choosePlan,
-        builder: (BuildContext context, GoRouterState state) => const ChoosePlanScreen(),
+        builder: (BuildContext context, GoRouterState state) =>
+            gatedDesignBoardScreen(
+              title: SubscriptionStrings.choosePlanTitle,
+              builder: () => const ChoosePlanScreen(),
+            ),
       ),
       GoRoute(
         path: paymentMethod,
-        builder: (BuildContext context, GoRouterState state) => const PaymentMethodScreen(),
+        builder: (BuildContext context, GoRouterState state) =>
+            gatedDesignBoardScreen(
+              title: SubscriptionStrings.paymentMethodTitle,
+              builder: () => const PaymentMethodScreen(),
+            ),
       ),
       GoRoute(
         path: paymentConfirmation,
         builder: (BuildContext context, GoRouterState state) =>
-            const PaymentConfirmationScreen(),
+            gatedDesignBoardScreen(
+              title: SubscriptionStrings.paymentConfirmationTitle,
+              builder: () => const PaymentConfirmationScreen(),
+            ),
       ),
       GoRoute(
         path: mySubscription,
-        builder: (BuildContext context, GoRouterState state) => const MySubscriptionScreen(),
+        builder: (BuildContext context, GoRouterState state) =>
+            gatedDesignBoardScreen(
+              title: SubscriptionStrings.mySubscriptionTitle,
+              builder: () => const MySubscriptionScreen(),
+            ),
       ),
-    ],
-    errorBuilder: (BuildContext context, GoRouterState state) =>
-        const LoginScreen(),
-  );
+    ];
 }
+
+GoRouter createAppRouter() => AppRouter.createRouter();

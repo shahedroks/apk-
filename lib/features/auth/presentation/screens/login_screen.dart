@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/routes/app_router.dart';
+import '../../../../core/storage/auth_session.dart';
 import '../../../../core/theme/text_styles.dart';
 import '../../../../core/utils/validators.dart';
 import '../providers/auth_provider.dart';
@@ -56,6 +57,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       _passwordController.text,
     );
     if (success && mounted) {
+      await AuthSession.setLoggedIn(true);
       context.go(AppRouter.home);
     }
   }
@@ -141,14 +143,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         child: Row(
                           children: [
                             SizedBox(
-                              width: 22.w,
-                              height: 22.w,
+                              width: 16.w,
+                              height: 16.w,
                               child: Checkbox(
                                 value: ui.rememberMe,
-                                activeColor: AppColors.primary,
-                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                visualDensity: VisualDensity.compact,
-                                side: const BorderSide(color: AppColors.textMuted),
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                                visualDensity: const VisualDensity(
+                                  horizontal: -4,
+                                  vertical: -4,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(2.5.r),
+                                ),
+                                side: const BorderSide(
+                                  color: AppColors.primary,
+                                  width: 1.5,
+                                ),
+                                fillColor: WidgetStateProperty.resolveWith(
+                                  (states) => states.contains(WidgetState.selected)
+                                      ? AppColors.primary
+                                      : Colors.transparent,
+                                ),
+                                checkColor: Colors.white,
                                 onChanged: (value) => ref
                                     .read(loginUiProvider.notifier)
                                     .toggleRememberMe(value),
@@ -204,7 +221,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             SizedBox(height: 20.h),
             const SwapDividerLabel(),
-            SizedBox(height: 16.h),
+            SizedBox(height: 12.h),
             const SwapSocialButtons(),
             SizedBox(height: 20.h),
             const SwapStatsBanner(),

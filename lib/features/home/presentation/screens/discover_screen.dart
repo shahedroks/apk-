@@ -68,10 +68,38 @@ class DiscoverScreen extends ConsumerWidget {
                   ),
                 ),
                 SizedBox(height: 16.h),
+                Material(
+                  color: AppColors.primaryDark,
+                  borderRadius: BorderRadius.circular(12.r),
+                  child: InkWell(
+                    onTap: () => context.push(AppRouter.myMatches),
+                    borderRadius: BorderRadius.circular(12.r),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.auto_awesome, size: 18.sp, color: AppColors.accentLime),
+                          SizedBox(width: 8.w),
+                          Text(
+                            HomeStrings.myMatches,
+                            style: AppTextStyles.label(fontSize: 15.sp).copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          Icon(Icons.arrow_forward, size: 16.sp, color: Colors.white),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 12.h),
                 PromoBanner(
                   onTap: () => context.push(AppRouter.myMatches),
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 20.h),
                 CategoryChipBar(
                   labels: HomeMockData.discoverCategories,
                   selectedIndex: category,
@@ -79,7 +107,7 @@ class DiscoverScreen extends ConsumerWidget {
                   onSelected: (i) =>
                       ref.read(discoverCategoryProvider.notifier).state = i,
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 20.h),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [

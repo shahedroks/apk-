@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -15,16 +16,18 @@ class ChatThreadTile extends StatelessWidget {
   final ChatThread thread;
   final VoidCallback? onTap;
 
+  static const _titleColor = Color(0xFF121C2A);
+  static const _chipGreen = Color(0xFF0A2E22);
+
   @override
   Widget build(BuildContext context) {
     final isRecent = thread.timeAgo.contains('m ago');
 
     return Padding(
-      padding: EdgeInsets.only(bottom: 4.h),
+      padding: EdgeInsets.only(bottom: thread.unreadCount > 0 ? 10.h : 4.h),
       child: Material(
         color: AppColors.surface,
         elevation: 0,
-        shadowColor: AppColors.primary.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(16.r),
         child: InkWell(
           onTap: onTap,
@@ -44,7 +47,7 @@ class ChatThreadTile extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.all(14.w),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _UserAvatar(thread: thread),
                   SizedBox(width: 12.w),
@@ -53,10 +56,10 @@ class ChatThreadTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Flexible(
+                            Expanded(
                               child: Row(
-                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Flexible(
                                     child: Text(
@@ -66,7 +69,8 @@ class ChatThreadTile extends StatelessWidget {
                                       style: AppTextStyles.label(fontSize: 18.sp)
                                           .copyWith(
                                         fontWeight: FontWeight.w600,
-                                        color: const Color(0xFF121C2A),
+                                        color: _titleColor,
+                                        height: 1.2,
                                       ),
                                     ),
                                   ),
@@ -75,13 +79,12 @@ class ChatThreadTile extends StatelessWidget {
                                     Icon(
                                       Icons.verified_rounded,
                                       size: 15.sp,
-                                      color: AppColors.primary,
+                                      color: _chipGreen,
                                     ),
                                   ],
                                 ],
                               ),
                             ),
-                            SizedBox(width: 8.w),
                             Text(
                               thread.timeAgo,
                               style: AppTextStyles.caption(fontSize: 10.sp)
@@ -90,6 +93,7 @@ class ChatThreadTile extends StatelessWidget {
                                 color: isRecent
                                     ? AppColors.accentGreen
                                     : AppColors.textMuted,
+                                height: 1.2,
                               ),
                             ),
                           ],
@@ -102,17 +106,15 @@ class ChatThreadTile extends StatelessWidget {
                           style: AppTextStyles.subtitle(fontSize: 14.sp)
                               .copyWith(
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF121C2A),
+                            color: _titleColor,
+                            height: 1.25,
                           ),
                         ),
                         SizedBox(height: 4.h),
                         Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8.w,
-                            vertical: 2.h,
-                          ),
+                          padding: EdgeInsets.fromLTRB(8.w, 2.h, 8.w, 2.h),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEFF4FF),
+                            color: AppColors.infoBackground,
                             borderRadius: BorderRadius.circular(999.r),
                           ),
                           child: Row(
@@ -121,7 +123,7 @@ class ChatThreadTile extends StatelessWidget {
                               Icon(
                                 Icons.swap_horiz_rounded,
                                 size: 11.sp,
-                                color: AppColors.primary,
+                                color: _chipGreen,
                               ),
                               SizedBox(width: 4.w),
                               Text(
@@ -129,7 +131,8 @@ class ChatThreadTile extends StatelessWidget {
                                 style: AppTextStyles.caption(fontSize: 10.sp)
                                     .copyWith(
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.primary,
+                                  color: _chipGreen,
+                                  height: 1.2,
                                 ),
                               ),
                             ],
@@ -139,40 +142,7 @@ class ChatThreadTile extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 8.w),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      _ItemThumbnail(color: thread.itemColor),
-                      if (thread.unreadCount > 0) ...[
-                        SizedBox(height: 4.h),
-                        Container(
-                          width: 20.w,
-                          height: 20.w,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: AppColors.accentLime,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 2,
-                                offset: const Offset(0, 1),
-                              ),
-                            ],
-                          ),
-                          child: Text(
-                            '${thread.unreadCount}',
-                            style: AppTextStyles.caption(fontSize: 10.sp)
-                                .copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.primary,
-                              height: 1,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
+                  _ItemThumbnailWithBadge(thread: thread),
                 ],
               ),
             ),
@@ -196,26 +166,20 @@ class _UserAvatar extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          Container(
-            width: 48.w,
-            height: 48.w,
-            decoration: BoxDecoration(
-              color: thread.avatarColor,
-              borderRadius: BorderRadius.circular(16.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                  spreadRadius: -2,
-                ),
-              ],
-            ),
-            child: Icon(
-              Icons.person_rounded,
-              size: 28.sp,
-              color: AppColors.primary.withValues(alpha: 0.35),
-            ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16.r),
+            child: thread.avatarUrl != null
+                ? CachedNetworkImage(
+                    imageUrl: thread.avatarUrl!,
+                    width: 48.w,
+                    height: 48.w,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) =>
+                        _AvatarFallback(thread: thread),
+                    errorWidget: (context, url, error) =>
+                        _AvatarFallback(thread: thread),
+                  )
+                : _AvatarFallback(thread: thread),
           ),
           if (thread.isOnline)
             Positioned(
@@ -237,41 +201,114 @@ class _UserAvatar extends StatelessWidget {
   }
 }
 
-class _ItemThumbnail extends StatelessWidget {
-  const _ItemThumbnail({required this.color});
+class _AvatarFallback extends StatelessWidget {
+  const _AvatarFallback({required this.thread});
+
+  final ChatThread thread;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 48.w,
+      height: 48.w,
+      color: thread.avatarColor,
+      child: Icon(
+        Icons.person_rounded,
+        size: 28.sp,
+        color: AppColors.primary.withValues(alpha: 0.35),
+      ),
+    );
+  }
+}
+
+class _ItemThumbnailWithBadge extends StatelessWidget {
+  const _ItemThumbnailWithBadge({required this.thread});
+
+  final ChatThread thread;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 48.w,
+      height: 48.w,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.bottomCenter,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12.r),
+            child: thread.itemImageUrl != null
+                ? CachedNetworkImage(
+                    imageUrl: thread.itemImageUrl!,
+                    width: 48.w,
+                    height: 48.w,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) =>
+                        _ItemPlaceholder(color: thread.itemColor),
+                    errorWidget: (context, url, error) =>
+                        _ItemPlaceholder(color: thread.itemColor),
+                  )
+                : _ItemPlaceholder(color: thread.itemColor),
+          ),
+          if (thread.unreadCount > 0)
+            Positioned(
+              bottom: -6.h,
+              child: Container(
+                width: 20.w,
+                height: 20.w,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.accentLime,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 2,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  '${thread.unreadCount}',
+                  style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: ChatThreadTile._chipGreen,
+                    height: 1,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ItemPlaceholder extends StatelessWidget {
+  const _ItemPlaceholder({required this.color});
 
   final Color color;
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12.r),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              color,
-              Color.lerp(color, Colors.black, 0.18)!,
-            ],
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.infoBackground,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 2,
+            offset: const Offset(0, 1),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 2,
-              offset: const Offset(0, 1),
-            ),
-          ],
-        ),
-        child: SizedBox(
-          width: 48.w,
-          height: 48.w,
-          child: Icon(
-            Icons.photo_outlined,
-            color: Colors.white.withValues(alpha: 0.45),
-            size: 22.sp,
-          ),
+        ],
+      ),
+      child: SizedBox(
+        width: 48.w,
+        height: 48.w,
+        child: Icon(
+          Icons.photo_outlined,
+          color: color.withValues(alpha: 0.45),
+          size: 22.sp,
         ),
       ),
     );

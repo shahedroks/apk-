@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LoginUiState {
   const LoginUiState({
-    this.rememberMe = false,
+    this.rememberMe = true,
     this.obscurePassword = true,
   });
 

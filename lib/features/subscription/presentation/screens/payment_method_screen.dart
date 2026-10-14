@@ -6,12 +6,34 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/subscription_strings.dart';
 import '../../../../core/routes/app_router.dart';
 import '../../../../core/theme/text_styles.dart';
-import '../../../auth/presentation/widgets/swap_primary_button.dart';
 import '../../../../core/utils/mock_actions.dart';
+import '../widgets/payment_method_widgets.dart';
 import '../widgets/subscription_widgets.dart';
 
-class PaymentMethodScreen extends StatelessWidget {
+class PaymentMethodScreen extends StatefulWidget {
   const PaymentMethodScreen({super.key});
+
+  @override
+  State<PaymentMethodScreen> createState() => _PaymentMethodScreenState();
+}
+
+class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _postalController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: SubscriptionStrings.cardholderHint);
+    _postalController = TextEditingController(text: SubscriptionStrings.postalDefault);
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _postalController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,145 +41,125 @@ class PaymentMethodScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 32.h),
           children: [
             const SubscriptionTopBar(title: SubscriptionStrings.paymentMethodTitle),
-            _securityStrip(),
+            SizedBox(height: 8.h),
+            const SubscriptionFlowStepLabel(label: SubscriptionStrings.step2Of3),
             SizedBox(height: 16.h),
-            const VirtualCardPreview(),
-            SizedBox(height: 16.h),
-            OutlinedButton.icon(
+            const PaymentSecurityStrip(),
+            SizedBox(height: 24.h),
+            const PaymentVirtualCardPreview(),
+            SizedBox(height: 24.h),
+            PaymentScanCardButton(
               onPressed: () => showMockSnackBar(context, 'Card scan (mock)'),
-              icon: Icon(Icons.camera_alt_outlined, size: 18.sp),
-              label: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(SubscriptionStrings.scanCard),
-                  SizedBox(width: 8.w),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
-                    decoration: BoxDecoration(
-                      color: AppColors.accentLime,
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
-                    child: Text(
-                      SubscriptionStrings.fast,
-                      style: AppTextStyles.caption(fontSize: 9.sp).copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              style: OutlinedButton.styleFrom(
-                minimumSize: Size(double.infinity, 48.h),
-                side: const BorderSide(color: AppColors.borderLight),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-              ),
+            ),
+            SizedBox(height: 24.h),
+            PaymentFormField(
+              label: SubscriptionStrings.cardholderName,
+              controller: _nameController,
+              icon: Icons.person_outline,
             ),
             SizedBox(height: 16.h),
-            const SubscriptionTextField(
-              label: SubscriptionStrings.cardholderName,
-              hint: 'Full name on card',
-              prefixIcon: Icons.person_outline,
-            ),
-            SizedBox(height: 12.h),
-            SubscriptionTextField(
+            PaymentFormField(
               label: SubscriptionStrings.cardNumber,
-              hint: '0000 0000 0000 0000',
-              prefixIcon: Icons.credit_card,
-              suffix: Padding(
-                padding: EdgeInsets.only(right: 8.w),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.payment, size: 18.sp, color: AppColors.textMuted),
-                    SizedBox(width: 4.w),
-                    Icon(Icons.credit_card, size: 18.sp, color: AppColors.textMuted),
-                  ],
-                ),
-              ),
+              hint: SubscriptionStrings.cardNumberHint,
+              icon: Icons.credit_card_outlined,
+              monospace: true,
+              suffix: const PaymentCardBrandChips(),
             ),
-            SizedBox(height: 12.h),
+            SizedBox(height: 16.h),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: const SubscriptionTextField(
+                  child: PaymentFormField(
                     label: SubscriptionStrings.expiryDate,
-                    hint: 'MM/YY',
+                    hint: SubscriptionStrings.expiryHint,
+                    icon: Icons.calendar_today_outlined,
+                    monospace: true,
                   ),
                 ),
-                SizedBox(width: 12.w),
+                SizedBox(width: 16.w),
                 Expanded(
-                  child: const SubscriptionTextField(
+                  child: PaymentFormField(
                     label: SubscriptionStrings.cvv,
-                    hint: '•••',
+                    hint: SubscriptionStrings.cvvHint,
+                    icon: Icons.lock_outline,
+                    monospace: true,
+                    labelTrailing: GestureDetector(
+                      onTap: () => showMockSnackBar(context, 'CVV help (mock)'),
+                      child: Icon(Icons.info_outline, size: 14.sp, color: AppColors.textSecondary),
+                    ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 12.h),
-            const SubscriptionTextField(
-              label: SubscriptionStrings.countryRegion,
-              hint: 'United States',
-              prefixIcon: Icons.public,
-            ),
-            SizedBox(height: 12.h),
-            const SubscriptionTextField(
-              label: SubscriptionStrings.postalZip,
-              hint: '10001',
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 20.h),
-            SwapPrimaryButton(
-              label: SubscriptionStrings.addCardCta,
-              onPressed: () => context.push(AppRouter.paymentConfirmation),
-            ),
-            TextButton(
-              onPressed: () => context.pop(),
-              child: Text(
-                SubscriptionStrings.cancelReturnPayment,
-                style: AppTextStyles.caption(fontSize: 12.sp),
-              ),
-            ),
             SizedBox(height: 16.h),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _securityStrip() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        color: AppColors.accentLime.withValues(alpha: 0.35),
-        borderRadius: BorderRadius.circular(8.r),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.lock_outline, size: 14.sp, color: AppColors.primary),
-              SizedBox(width: 6.w),
-              Text(
-                SubscriptionStrings.pciBanner,
-                style: AppTextStyles.caption(fontSize: 10.sp).copyWith(
-                  fontWeight: FontWeight.w700,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: PaymentFormField(
+                    label: SubscriptionStrings.countryRegion,
+                    hint: SubscriptionStrings.countryDefault,
+                    icon: Icons.public_outlined,
+                    readOnly: true,
+                    showChevron: true,
+                  ),
+                ),
+                SizedBox(width: 16.w),
+                Expanded(
+                  child: PaymentFormField(
+                    label: SubscriptionStrings.postalZip,
+                    controller: _postalController,
+                    icon: Icons.location_on_outlined,
+                    keyboardType: TextInputType.number,
+                    monospace: true,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 24.h),
+            SizedBox(
+              width: double.infinity,
+              height: 48.h,
+              child: FilledButton.icon(
+                onPressed: () => context.push(AppRouter.paymentConfirmation),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                  elevation: 0,
+                  shadowColor: Colors.black.withValues(alpha: 0.1),
+                ),
+                icon: Icon(Icons.lock_outline, size: 14.sp, color: Colors.white),
+                label: Text(
+                  SubscriptionStrings.addCardCta,
+                  style: AppTextStyles.label(fontSize: 13.sp).copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ],
-          ),
-          Text(
-            SubscriptionStrings.tlsActive,
-            style: AppTextStyles.caption(fontSize: 9.sp).copyWith(
-              fontWeight: FontWeight.w800,
-              color: AppColors.accentGreen,
             ),
-          ),
-        ],
+            SizedBox(height: 8.h),
+            TextButton(
+              onPressed: () => context.pop(),
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 8.h),
+                minimumSize: Size(double.infinity, 34.h),
+              ),
+              child: Text(
+                SubscriptionStrings.cancelReturnPayment,
+                style: AppTextStyles.label(fontSize: 13.sp).copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

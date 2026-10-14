@@ -28,4 +28,11 @@ class ChatStrings {
   static const String quickReply3 = '📍 Share live location';
 
   static const String messageHint = 'Type a message...';
+
+  static const String partnerAvatarUrl =
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop';
+  static const String youOfferImageUrl =
+      'https://images.unsplash.com/photo-1587829745530-0ce173b4c7ff?w=400&h=400&fit=crop';
+  static const String partnerItemImageUrl =
+      'https://images.unsplash.com/photo-1618424187943-44642a3d0934?w=400&h=400&fit=crop';
 }

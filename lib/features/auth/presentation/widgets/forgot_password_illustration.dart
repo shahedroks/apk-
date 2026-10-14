@@ -10,88 +10,110 @@ class ForgotPasswordIllustration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 132.h,
-      child: Stack(
-        alignment: Alignment.center,
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            width: 120.w,
-            height: 120.w,
-            decoration: BoxDecoration(
-              color: AppColors.mintGlow.withValues(alpha: 0.55),
-              shape: BoxShape.circle,
-            ),
-          ),
-          Container(
-            width: 88.w,
-            height: 88.w,
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.25),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
+      height: 112.h,
+      child: Center(
+        child: SizedBox(
+          width: 80.w,
+          height: 80.w,
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              Positioned(
+                left: -8.w,
+                top: -8.w,
+                child: Container(
+                  width: 96.w,
+                  height: 96.w,
+                  decoration: BoxDecoration(
+                    color: AppColors.mintGlow.withValues(alpha: 0.6),
+                    shape: BoxShape.circle,
+                  ),
                 ),
-              ],
-            ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Icon(
-                  Icons.mail_rounded,
-                  size: 40.sp,
-                  color: Colors.white,
+              ),
+              Container(
+                width: 80.w,
+                height: 80.w,
+                decoration: BoxDecoration(
+                  color: AppColors.mintGlow,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 2,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
                 ),
-                Positioned(
-                  right: 18.w,
-                  top: 20.h,
+                child: Center(
                   child: Container(
-                    width: 18.w,
-                    height: 18.w,
+                    width: 56.w,
+                    height: 56.w,
                     decoration: const BoxDecoration(
-                      color: AppColors.accentLime,
+                      color: AppColors.primaryDark,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
-                      Icons.check_rounded,
-                      size: 12.sp,
-                      color: AppColors.primaryDark,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Center(
+                          child: Icon(
+                            Icons.mail_outline_rounded,
+                            size: 22.sp,
+                            color: AppColors.accentLime,
+                          ),
+                        ),
+                        Positioned(
+                          right: 6.w,
+                          top: 6.h,
+                          child: Container(
+                            width: 14.w,
+                            height: 14.w,
+                            decoration: const BoxDecoration(
+                              color: AppColors.accentLime,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.check_rounded,
+                              size: 10.sp,
+                              color: AppColors.primaryDark,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-          Transform.translate(
-            offset: Offset(38.w, 34.h),
-            child: Container(
-              width: 36.w,
-              height: 36.w,
-              decoration: BoxDecoration(
-                color: AppColors.accentLime,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.surface, width: 3),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+              ),
+              Positioned(
+                right: -4.w,
+                bottom: -4.w,
+                child: Container(
+                  width: 28.w,
+                  height: 28.w,
+                  decoration: BoxDecoration(
+                    color: AppColors.accentLime,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.surface, width: 2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 2,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
                   ),
-                ],
+                  child: Icon(
+                    Icons.vpn_key_rounded,
+                    size: 14.sp,
+                    color: AppColors.primaryDark,
+                  ),
+                ),
               ),
-              child: Icon(
-                Icons.vpn_key_rounded,
-                size: 18.sp,
-                color: AppColors.primaryDark,
-              ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 }
-

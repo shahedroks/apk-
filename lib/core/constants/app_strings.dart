@@ -28,6 +28,8 @@ class AppStrings {
   static const String apple = 'Apple';
   static const String itemsDiverted =
       '3,420 items diverted by local swappers this week';
+  static const String itemsDivertedHeadline = '3,420 items diverted';
+  static const String itemsDivertedSubline = 'by local swappers this week';
   static const String noAccount = "Don't have an account?";
   static const String haveAccount = 'Already have an account?';
 
@@ -70,4 +72,8 @@ class AppStrings {
   static const String home = 'Home';
   static const String profile = 'Profile';
   static const String settings = 'Settings';
+
+  static const String comingSoon = 'Coming Soon';
+  static const String comingSoonBody =
+      'This experience is being polished. Check back in a future update.';
 }

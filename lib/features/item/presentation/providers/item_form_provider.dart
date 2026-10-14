@@ -17,7 +17,7 @@ class MyItemsTabIndex extends Notifier<int> {
 
 class WildcardSwapToggle extends Notifier<bool> {
   @override
-  bool build() => false;
+  bool build() => true;
 }
 
 final proposeOfferIndexProvider =

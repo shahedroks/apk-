@@ -20,6 +20,8 @@ class AppColors {
   static const Color toggleTrack = Color(0xFFE6EEFF);
   static const Color error = Color(0xFFB3261E);
 
+  // static const Color error = Color(0xFFB3261E);
+
   // Legacy aliases used elsewhere
   static const Color secondary = textSecondary;
   static const Color onSurface = textPrimary;

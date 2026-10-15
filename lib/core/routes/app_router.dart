@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../constants/chat_strings.dart';
 import '../constants/extra_strings.dart';
-import '../constants/home_strings.dart';
-import '../constants/item_strings.dart';
-import '../constants/profile_strings.dart';
+import '../constants/match_strings.dart';
 import '../constants/subscription_strings.dart';
 import '../storage/auth_session.dart';
 import 'screen_gate.dart';
@@ -189,24 +186,16 @@ class AppRouter {
       GoRoute(
         path: incomingSwapOffers,
         builder: (BuildContext context, GoRouterState state) =>
-            gatedDesignBoardScreen(
-              title: ProfileStrings.incomingSwapOffersListTitle,
-              builder: () => const IncomingSwapListScreen(),
-            ),
+            const IncomingSwapListScreen(),
         routes: [
           GoRoute(
             path: ':offerId',
             builder: (BuildContext context, GoRouterState state) {
               final reviewTitle =
                   state.uri.queryParameters['title'] == 'review';
-              return gatedDesignBoardScreen(
-                title: reviewTitle
-                    ? HomeStrings.reviewOffer
-                    : ProfileStrings.incomingSwapOffer,
-                builder: () => IncomingSwapOfferScreen(
-                  offerId: state.pathParameters['offerId'],
-                  useReviewTitle: reviewTitle,
-                ),
+              return IncomingSwapOfferScreen(
+                offerId: state.pathParameters['offerId'],
+                useReviewTitle: reviewTitle,
               );
             },
           ),
@@ -215,12 +204,9 @@ class AppRouter {
       GoRoute(
         path: '/chat/:threadId',
         builder: (BuildContext context, GoRouterState state) {
-          return gatedDesignBoardScreen(
-            title: ChatStrings.chatConversation,
-            builder: () => ChatConversationScreen(
-              threadId: state.pathParameters['threadId'],
-              partnerName: state.uri.queryParameters['name'],
-            ),
+          return ChatConversationScreen(
+            threadId: state.pathParameters['threadId'],
+            partnerName: state.uri.queryParameters['name'],
           );
         },
       ),
@@ -232,23 +218,16 @@ class AppRouter {
       ),
       GoRoute(
         path: proposeSwap,
-        builder: (BuildContext context, GoRouterState state) =>
-            gatedDesignBoardScreen(
-              title: HomeStrings.proposeSwap,
-              builder: () => ProposeSwapScreen(
-                itemId: state.uri.queryParameters['itemId'],
-              ),
-            ),
+        builder: (BuildContext context, GoRouterState state) => ProposeSwapScreen(
+          itemId: state.uri.queryParameters['itemId'],
+        ),
       ),
       GoRoute(
         path: swapInvitationSent,
         builder: (BuildContext context, GoRouterState state) {
           final raw = state.uri.queryParameters['offerIndex'];
           final offerIndex = int.tryParse(raw ?? '') ?? 0;
-          return gatedDesignBoardScreen(
-            title: ItemStrings.inviteSuccessTitle,
-            builder: () => SwapInvitationSentScreen(offerIndex: offerIndex),
-          );
+          return SwapInvitationSentScreen(offerIndex: offerIndex);
         },
       ),
       GoRoute(
@@ -266,7 +245,11 @@ class AppRouter {
       ),
       GoRoute(
         path: myMatches,
-        builder: (BuildContext context, GoRouterState state) => const MyMatchesScreen(),
+        builder: (BuildContext context, GoRouterState state) =>
+            gatedDesignBoardScreen(
+              title: MatchStrings.myMatches,
+              builder: () => const MyMatchesScreen(),
+            ),
       ),
       GoRoute(
         path: '/match/:matchId',
@@ -277,7 +260,10 @@ class AppRouter {
       GoRoute(
         path: notifications,
         builder: (BuildContext context, GoRouterState state) =>
-            const NotificationsScreen(),
+            gatedDesignBoardScreen(
+              title: ExtraStrings.notifications,
+              builder: () => const NotificationsScreen(),
+            ),
       ),
       GoRoute(
         path: swapCompleted,

@@ -142,7 +142,7 @@ class SettingsScreen extends ConsumerWidget {
           SizedBox(height: 24.h),
           SettingsLogOutBlock(
             onLogOut: () async {
-              await AuthSession.clear();
+              await AuthSession.signOut();
               if (context.mounted) context.go(AppRouter.login);
             },
             onDeleteAccount: () =>

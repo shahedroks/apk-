@@ -167,7 +167,7 @@ class CheckEmailScreen extends ConsumerWidget {
                       child: Text(
                         AppStrings.resend,
                         style: AppTextStyles.label(fontSize: 12.sp).copyWith(
-                          color: AppColors.accentGreen,
+                          color: AppColors.link,
                           decoration: TextDecoration.underline,
                           fontWeight: FontWeight.w700,
                         ),

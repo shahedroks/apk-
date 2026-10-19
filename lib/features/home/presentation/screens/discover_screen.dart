@@ -8,8 +8,9 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/home_strings.dart';
 import '../../../../core/theme/text_styles.dart';
 import '../../../../core/utils/mock_actions.dart';
-import '../../data/home_mock_data.dart';
 import '../providers/home_ui_provider.dart';
+import '../providers/firebase_data_providers.dart';
+import '../providers/listings_provider.dart';
 import '../widgets/category_chip_bar.dart';
 import '../widgets/home_search_bar.dart';
 import '../widgets/home_top_bar.dart';
@@ -22,6 +23,8 @@ class DiscoverScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final category = ref.watch(discoverCategoryProvider);
+    final categoryLabels = ref.watch(categoryLabelsProvider);
+    final listings = ref.watch(discoverSwapListingsProvider);
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
@@ -100,12 +103,21 @@ class DiscoverScreen extends ConsumerWidget {
                   onTap: () => context.push(AppRouter.myMatches),
                 ),
                 SizedBox(height: 20.h),
-                CategoryChipBar(
-                  labels: HomeMockData.discoverCategories,
-                  selectedIndex: category,
-                  style: CategoryChipStyle.discover,
-                  onSelected: (i) =>
-                      ref.read(discoverCategoryProvider.notifier).state = i,
+                categoryLabels.when(
+                  data: (labels) => CategoryChipBar(
+                    labels: labels,
+                    selectedIndex: category,
+                    style: CategoryChipStyle.discover,
+                    onSelected: (i) =>
+                        ref.read(discoverCategoryProvider.notifier).state = i,
+                  ),
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, __) => CategoryChipBar(
+                    labels: const ['All'],
+                    selectedIndex: 0,
+                    style: CategoryChipStyle.discover,
+                    onSelected: (_) {},
+                  ),
                 ),
                 SizedBox(height: 20.h),
                 Row(
@@ -172,13 +184,36 @@ class DiscoverScreen extends ConsumerWidget {
             ),
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                final item = HomeMockData.discoverItems[index];
-                return ItemGridCard(
-                  item: item,
-                  onTap: () => context.push(AppRouter.item(item.id)),
+                return listings.when(
+                  data: (items) {
+                    if (items.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'No listings yet. Check back soon!',
+                          style: AppTextStyles.subtitle(fontSize: 13.sp),
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    }
+                    final item = items[index];
+                    return ItemGridCard(
+                      item: item,
+                      onTap: () => context.push(AppRouter.item(item.id)),
+                      onSaveTap: () => ref
+                          .read(savedItemsRepositoryProvider)
+                          .toggleSaved(item.id),
+                    );
+                  },
+                  loading: () => const Center(child: CircularProgressIndicator()),
+                  error: (e, _) => Center(
+                    child: Text(
+                      'Could not load listings',
+                      style: AppTextStyles.subtitle(fontSize: 12.sp),
+                    ),
+                  ),
                 );
               },
-              childCount: HomeMockData.discoverItems.length,
+              childCount: listings.value?.length ?? 1,
             ),
           ),
         ),

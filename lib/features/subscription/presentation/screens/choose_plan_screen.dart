@@ -183,7 +183,7 @@ class _LegalLink extends StatelessWidget {
         style: AppTextStyles.caption(fontSize: 11.sp).copyWith(
           fontWeight: FontWeight.w600,
           decoration: TextDecoration.underline,
-          color: AppColors.accentGreen,
+          color: AppColors.link,
         ),
       ),
     );

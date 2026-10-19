@@ -5,8 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/routes/app_router.dart';
+import '../../../../core/storage/auth_session.dart';
 import '../../../../core/theme/text_styles.dart';
 import '../../../../core/utils/validators.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/auth_form_card.dart';
 import '../widgets/auth_mode_toggle.dart';
 import '../widgets/swap_auth_extras.dart';
@@ -27,19 +29,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  late final AuthProvider _authProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _authProvider = AuthProvider();
+    _authProvider.addListener(_onAuthChanged);
+  }
+
+  void _onAuthChanged() => setState(() {});
 
   @override
   void dispose() {
+    _authProvider.removeListener(_onAuthChanged);
+    _authProvider.dispose();
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  void _submit() {
-    if (_formKey.currentState!.validate()) {
-      context.go(AppRouter.login);
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+    final success = await _authProvider.register(
+      name: _nameController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
+    if (!success || !mounted) return;
+    await AuthSession.setLoggedIn(true);
+    final profileSaved = await AuthSession.syncFirestoreProfile();
+    if (!mounted) return;
+    if (!profileSaved) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Account created, but role was not saved yet. '
+            'Publish Firestore rules in Firebase Console, then log in again.',
+            style: AppTextStyles.subtitle(fontSize: 13.sp),
+          ),
+          backgroundColor: AppColors.primaryDark,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
+    context.go(AppRouter.home);
   }
 
   @override
@@ -79,7 +114,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   SwapTextField(
                     label: 'Full name',
                     controller: _nameController,
-                    hintText: 'Alex Chen',
+                    hintText: AppStrings.nameFieldHint,
                     validator: (v) =>
                         v == null || v.isEmpty ? 'Name is required' : null,
                     prefixIcon: Icon(
@@ -92,6 +127,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   SwapTextField(
                     label: AppStrings.emailAddress,
                     controller: _emailController,
+                    hintText: AppStrings.emailFieldHint,
                     keyboardType: TextInputType.emailAddress,
                     validator: Validators.email,
                     prefixIcon: Icon(
@@ -105,6 +141,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     label: AppStrings.password,
                     trailingLabel: AppStrings.passwordHint,
                     controller: _passwordController,
+                    hintText: AppStrings.passwordFieldHint,
                     obscureText: _obscurePassword,
                     validator: Validators.password,
                     prefixIcon: Icon(
@@ -124,11 +161,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
+                  if (_authProvider.error != null) ...[
+                    SizedBox(height: 12.h),
+                    Text(
+                      _authProvider.error!,
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.caption(fontSize: 12.sp).copyWith(
+                        color: AppColors.error,
+                      ),
+                    ),
+                  ],
                   SizedBox(height: 20.h),
                   SwapPrimaryButton(
                     label: AppStrings.signUp,
                     icon: Icons.arrow_forward_rounded,
                     iconAtEnd: true,
+                    isLoading: _authProvider.isLoading,
                     onPressed: _submit,
                   ),
                 ],
@@ -154,7 +202,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Text(
                     AppStrings.logIn,
                     style: AppTextStyles.label(fontSize: 13.sp).copyWith(
-                      color: AppColors.accentGreen,
+                      color: AppColors.link,
                       decoration: TextDecoration.underline,
                     ),
                   ),

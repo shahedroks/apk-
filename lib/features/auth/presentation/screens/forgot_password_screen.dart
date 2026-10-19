@@ -7,6 +7,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/routes/app_router.dart';
 import '../../../../core/theme/text_styles.dart';
 import '../../../../core/utils/validators.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/auth_form_card.dart';
 import '../widgets/auth_security_header.dart';
 import '../widgets/forgot_password_illustration.dart';
@@ -23,18 +24,31 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController =
-      TextEditingController(text: 'eco.trader@swapit.com');
+  final _emailController = TextEditingController();
+  late final AuthProvider _authProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _authProvider = AuthProvider();
+    _authProvider.addListener(_onAuthChanged);
+  }
+
+  void _onAuthChanged() => setState(() {});
 
   @override
   void dispose() {
+    _authProvider.removeListener(_onAuthChanged);
+    _authProvider.dispose();
     _emailController.dispose();
     super.dispose();
   }
 
-  void _sendResetLink() {
+  Future<void> _sendResetLink() async {
     if (!_formKey.currentState!.validate()) return;
     final email = _emailController.text.trim();
+    final success = await _authProvider.sendPasswordReset(email);
+    if (!success || !mounted) return;
     context.push('${AppRouter.checkEmail}?email=${Uri.encodeComponent(email)}');
   }
 
@@ -73,7 +87,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   SwapTextField(
                     label: AppStrings.email,
                     controller: _emailController,
-                    hintText: 'eco.trader@swapit.com',
+                    hintText: AppStrings.emailFieldHint,
                     keyboardType: TextInputType.emailAddress,
                     validator: Validators.email,
                     helperText: AppStrings.registryHint,
@@ -89,11 +103,22 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     title: AppStrings.fastRecovery,
                     body: AppStrings.fastRecoveryBody,
                   ),
+                  if (_authProvider.error != null) ...[
+                    SizedBox(height: 12.h),
+                    Text(
+                      _authProvider.error!,
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.caption(fontSize: 12.sp).copyWith(
+                        color: AppColors.error,
+                      ),
+                    ),
+                  ],
                   SizedBox(height: 20.h),
                   SwapPrimaryButton(
                     label: AppStrings.sendResetLink,
                     icon: Icons.arrow_forward_rounded,
                     iconAtEnd: true,
+                    isLoading: _authProvider.isLoading,
                     onPressed: _sendResetLink,
                   ),
                 ],
@@ -141,7 +166,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   child: Text(
                     AppStrings.backToLogin,
                     style: AppTextStyles.label(fontSize: 13.sp).copyWith(
-                      color: AppColors.accentGreen,
+                      color: AppColors.link,
                       decoration: TextDecoration.underline,
                       fontWeight: FontWeight.w700,
                     ),

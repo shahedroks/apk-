@@ -21,6 +21,9 @@ class AppStrings {
   static const String password = 'Password';
   static const String directVerified = 'Direct verified';
   static const String passwordHint = '8+ characters';
+  static const String emailFieldHint = 'you@email.com';
+  static const String passwordFieldHint = 'Enter your password';
+  static const String nameFieldHint = 'Your full name';
   static const String rememberMe = 'Remember me';
   static const String forgotPassword = 'Forgot password?';
   static const String orContinueWith = 'OR CONTINUE WITH';

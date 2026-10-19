@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/subscription_strings.dart';
 import '../../../../core/routes/app_router.dart';
 import '../../../auth/presentation/widgets/swap_primary_button.dart';
+import '../../../../core/widgets/feature_incomplete_banner.dart';
 import '../widgets/payment_confirmation_widgets.dart';
 import '../widgets/subscription_widgets.dart';
 
@@ -22,6 +23,10 @@ class PaymentConfirmationScreen extends StatelessWidget {
           children: [
             const SubscriptionTopBar(title: SubscriptionStrings.paymentConfirmationTitle),
             SizedBox(height: 16.h),
+            const FeatureIncompleteBanner(
+              message:
+                  'Payments are not connected yet. No charge will be made. Subscription metadata may be read from Firebase when configured.',
+            ),
             const PaymentConfirmationSecureBanner(),
             SizedBox(height: 24.h),
             const PaymentConfirmationIntroHeader(),

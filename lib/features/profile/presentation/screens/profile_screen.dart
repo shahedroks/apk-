@@ -127,7 +127,7 @@ class ProfileScreen extends ConsumerWidget {
             SizedBox(height: 16.h),
             ProfileLogOutSection(
               onLogOut: () async {
-                await AuthSession.clear();
+                await AuthSession.signOut();
                 if (context.mounted) context.go(AppRouter.login);
               },
               onDeleteAccount: () => showMockSnackBar(

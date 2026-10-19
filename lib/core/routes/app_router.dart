@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../constants/extra_strings.dart';
 import '../constants/match_strings.dart';
 import '../constants/subscription_strings.dart';
+import '../firebase/auth_refresh_listenable.dart';
 import '../storage/auth_session.dart';
 import 'screen_gate.dart';
 import '../../features/auth/presentation/screens/check_email_screen.dart';
@@ -135,9 +136,10 @@ class AppRouter {
     return null;
   }
 
-  static GoRouter createRouter() {
+  static GoRouter createRouter({AuthRefreshListenable? refreshListenable}) {
     return GoRouter(
       initialLocation: AuthSession.isLoggedIn ? home : login,
+      refreshListenable: refreshListenable,
       redirect: _authRedirect,
       routes: _routes,
       errorBuilder: (BuildContext context, GoRouterState state) =>
@@ -334,4 +336,5 @@ class AppRouter {
     ];
 }
 
-GoRouter createAppRouter() => AppRouter.createRouter();
+GoRouter createAppRouter({AuthRefreshListenable? refreshListenable}) =>
+    AppRouter.createRouter(refreshListenable: refreshListenable);

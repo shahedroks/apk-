@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "85717604113",
+    "project_id": "swap-it-1",
+    "storage_bucket": "swap-it-1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:85717604113:android:422c4b4267afe893901eb0",
+        "android_client_info": {
+          "package_name": "com.example.my_flutter_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2tFz5_MOfY8uw0JIJPMpYZvBFge_1BR0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

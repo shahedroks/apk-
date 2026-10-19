@@ -18,6 +18,7 @@ class ItemGridCard extends StatelessWidget {
     this.wantsStyle = ItemWantsStyle.discover,
     this.onTap,
     this.onProposeTap,
+    this.onSaveTap,
   });
 
   final SwapListing item;
@@ -26,6 +27,7 @@ class ItemGridCard extends StatelessWidget {
   final ItemWantsStyle wantsStyle;
   final VoidCallback? onTap;
   final VoidCallback? onProposeTap;
+  final VoidCallback? onSaveTap;
 
   @override
   Widget build(BuildContext context) {
@@ -67,26 +69,29 @@ class ItemGridCard extends StatelessWidget {
                     Positioned(
                       right: 8.w,
                       top: 8.h,
-                      child: Container(
-                        width: 32.w,
-                        height: 32.w,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.8),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 2,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          filledHeart ? Icons.favorite : Icons.favorite_border,
-                          size: 15.sp,
-                          color: filledHeart
-                              ? AppColors.accentLime
-                              : AppColors.textPrimary,
+                      child: GestureDetector(
+                        onTap: onSaveTap,
+                        child: Container(
+                          width: 32.w,
+                          height: 32.w,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.8),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.05),
+                                blurRadius: 2,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            filledHeart ? Icons.favorite : Icons.favorite_border,
+                            size: 15.sp,
+                            color: filledHeart
+                                ? AppColors.accentLime
+                                : AppColors.textPrimary,
+                          ),
                         ),
                       ),
                     ),

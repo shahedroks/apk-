@@ -64,16 +64,19 @@ class SwapTextField extends StatelessWidget {
           obscureText: obscureText,
           keyboardType: keyboardType,
           validator: validator,
-          style: AppTextStyles.subtitle(fontSize: 14.sp).copyWith(
+          style: AppTextStyles.subtitle(fontSize: 15.sp).copyWith(
             color: AppColors.textPrimary,
+            fontWeight: FontWeight.w500,
           ),
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: AppTextStyles.subtitle(fontSize: 14.sp).copyWith(
-              color: AppColors.textMuted,
+            hintStyle: AppTextStyles.subtitle(fontSize: 15.sp).copyWith(
+              color: AppColors.textMuted.withValues(alpha: 0.65),
+              fontWeight: FontWeight.w400,
+              letterSpacing: 0.1,
             ),
             filled: true,
-            fillColor: fillColor ?? AppColors.surface,
+            fillColor: fillColor ?? AppColors.fieldGray,
             contentPadding: EdgeInsets.symmetric(
               horizontal: 14.w,
               vertical: 14.h,

@@ -27,9 +27,8 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController =
-      TextEditingController(text: 'sara.miller@example.com');
-  final _passwordController = TextEditingController(text: 'password123');
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   late final AuthProvider _authProvider;
 
   @override
@@ -58,6 +57,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
     if (success && mounted) {
       await AuthSession.setLoggedIn(true);
+      final profileSaved = await AuthSession.syncFirestoreProfile();
+      if (!mounted) return;
+      if (!profileSaved) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Logged in, but profile/role sync failed. '
+              'Check Firestore rules in Firebase Console.',
+              style: AppTextStyles.subtitle(fontSize: 13.sp),
+            ),
+            backgroundColor: AppColors.primaryDark,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
       context.go(AppRouter.home);
     }
   }
@@ -102,7 +116,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     label: AppStrings.emailAddress,
                     trailingLabel: AppStrings.directVerified,
                     controller: _emailController,
-                    hintText: 'sara.miller@example.com',
+                    hintText: AppStrings.emailFieldHint,
                     keyboardType: TextInputType.emailAddress,
                     validator: Validators.email,
                     prefixIcon: Icon(
@@ -116,6 +130,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     label: AppStrings.password,
                     trailingLabel: AppStrings.passwordHint,
                     controller: _passwordController,
+                    hintText: AppStrings.passwordFieldHint,
                     obscureText: ui.obscurePassword,
                     validator: Validators.password,
                     prefixIcon: Icon(
@@ -239,7 +254,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   child: Text(
                     AppStrings.signUp,
                     style: AppTextStyles.label(fontSize: 13.sp).copyWith(
-                      color: AppColors.accentGreen,
+                      color: AppColors.link,
                       decoration: TextDecoration.underline,
                     ),
                   ),

@@ -10,7 +10,9 @@ import '../../../../core/routes/app_router.dart';
 import '../../../../core/theme/text_styles.dart';
 import '../../../../core/utils/mock_actions.dart';
 import '../../data/add_item_mock_data.dart';
+import '../providers/add_item_providers.dart';
 import '../providers/item_form_provider.dart';
+import '../services/add_item_publish.dart';
 
 class AddItemScreen extends ConsumerStatefulWidget {
   const AddItemScreen({super.key});
@@ -49,6 +51,28 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
     _titleController.dispose();
     _descController.dispose();
     super.dispose();
+  }
+
+  Future<void> _publishListing(BuildContext context) async {
+    final wants = ref.read(wildcardSwapProvider)
+        ? ItemStrings.wildcard
+        : ItemStrings.wishlistTagsHint;
+    try {
+      await ref.read(addItemPublishProvider).publish(
+            title: _titleController.text,
+            description: _descController.text,
+            wants: wants,
+            conditionIndex: ref.read(addItemConditionProvider),
+            conditionLabels: _conditions,
+          );
+      if (!context.mounted) return;
+      context.push(AppRouter.addItemSuccess);
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not publish: $e')),
+      );
+    }
   }
 
   @override
@@ -303,8 +327,8 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
                 ),
                 SizedBox(height: 24.h),
                 _PublishActions(
-                  onPublish: () => context.push(AppRouter.addItemSuccess),
-                  onDraft: () => showMockSnackBar(context, 'Draft saved (mock)'),
+                  onPublish: () => _publishListing(context),
+                  onDraft: () => showMockSnackBar(context, 'Draft save not synced yet'),
                 ),
               ],
             ),

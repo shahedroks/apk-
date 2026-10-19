@@ -38,6 +38,26 @@ class SwapListing {
   final ListingBadgeStyle badgeStyle;
   final bool isSaved;
   final bool isAvailable;
+
+  SwapListing copyWith({
+    bool? isSaved,
+    bool? isAvailable,
+  }) {
+    return SwapListing(
+      id: id,
+      title: title,
+      wants: wants,
+      location: location,
+      postedAgo: postedAgo,
+      badge: badge,
+      imageColor: imageColor,
+      imageUrl: imageUrl,
+      swapDetail: swapDetail,
+      badgeStyle: badgeStyle,
+      isSaved: isSaved ?? this.isSaved,
+      isAvailable: isAvailable ?? this.isAvailable,
+    );
+  }
 }
 
 class ChatThread {
